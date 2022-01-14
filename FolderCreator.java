@@ -27,7 +27,7 @@ public class FolderCreator {
         String folderLoc = this.getFolderLoc();
         Integer weekNum = this.getWeeks();
         if (!Handler.handleFolderConf(folderLoc, weekNum)) {
-            System.out.println("Exitting...");
+            System.out.println("Exiting...");
             System.exit(0);
             }
         for (int i = 1; i < weekNum + 1; i++) {
