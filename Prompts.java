@@ -1,79 +1,30 @@
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-
 public class Prompts {
-
     static final String YES = "Y";
     static final String NO = "N";
-    private static final Scanner SCANNER = new Scanner(System.in);
+    static final String OPTION_A = "A";
+    static final String OPTION_B = "B";
+    static final String OPTION_C = "C";
+    static final String OPTION_D = "D";
 
-    private static <E> String decisionString(String msg, List<E> options) {
-        Boolean chosen = false;
-        String userInput = "";
-        while (!chosen) {
-            try {
-                userInput = SCANNER.nextLine().toUpperCase();
-                if (!options.contains(userInput)) {
-                    throw new InvalidOptionException();
-                }
-                else chosen = true;
-            }
-            catch (InvalidOptionException e) {System.out.println(msg);}
-        }
-        return userInput;
+    public static final String continuePrompt() {
+        return String.format("Continue?\n" +
+                             "[%s] - Yes\n" +
+                             "[%s] - No", YES, NO);
     }
 
-    private static Integer decisionNumber(String msg, Integer min, Integer max) {
-    	Boolean chosen = false;
-    	int chosenAmount = -1;
-    	while (!chosen) {
-    		try {
-    			chosenAmount = Integer.parseInt(SCANNER.nextLine());
-    			if (chosenAmount > max || chosenAmount < min) {
-    				throw new InvalidOptionException();
-    			}
-    			else chosen = true;
-    		}		
-    		catch(NumberFormatException| InvalidOptionException e) {System.out.println(msg);}	
-    		}
-        return chosenAmount;
+    public static final String folderOptionsPrompt() {
+        return String.format("What do you want to do?\n" +
+                             "[%s] - Create a new folder\n" +
+                             "[%s] - Create \"Week\" folders\n" +
+                             "[%s] - Reconfigure file path\n" +
+                             "[%s] - Exit", OPTION_A, OPTION_B, OPTION_C, OPTION_D);
     }
 
-    public static String yesNo(String msg) {
-        List<String> options = Arrays.asList(YES, NO);
-        return Prompts.decisionString(msg, options);
-    }
-
-    public static String askForString(String msg) {
-        System.out.println(msg);
-        return SCANNER.nextLine();
-    }
-
-    public static Integer askForInteger(String msg, Integer min, Integer max) {
-        System.out.println(msg);
-        return decisionNumber(msg, min, max);
-    }
-
-    public static String askForFilePath() {
-        String startFilePathQ = "Enter the filepath for where your folders should be created:";
-        Boolean chosen = false;
-        String userInput = "";
-
-        System.out.println(startFilePathQ);
-        while (!chosen) {
-            try {
-                userInput = SCANNER.nextLine();
-                if (!(new File(userInput).exists())) {
-                    throw new InvalidOptionException();
-                }
-                else chosen = true;
-            }
-            catch (InvalidOptionException e) {
-                System.out.println("Invalid file path. Please try again:");
-            }
-        }
-        return userInput;
+    public static final String createFolderOptionsPrompt() {
+        return String.format("Where do you want to create a new folder?\n" +
+                             "[%s] - In each week folder\n" +
+                             "[%s] - In a specific week folder\n" +
+                             "[%s] - In the course folder\n" +
+                             "[%s] - Back", OPTION_A, OPTION_B, OPTION_C, OPTION_D);
     }
 }

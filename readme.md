@@ -9,7 +9,5 @@ Run FolderCreator.java and enter the program's required inputs.
 
 ## To Do
 - Documentation
-- Option to create folders within the created Week folders
 - General refactoring
 - .exe file
-- Option to continue creating folders w/o exiting
