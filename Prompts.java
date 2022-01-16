@@ -5,6 +5,7 @@ public class Prompts {
     static final String OPTION_B = "B";
     static final String OPTION_C = "C";
     static final String OPTION_D = "D";
+    static final String OPTION_E = "E";
 
     public static final String continuePrompt() {
         return String.format("Continue?\n" +
@@ -16,8 +17,10 @@ public class Prompts {
         return String.format("What do you want to do?\n" +
                              "[%s] - Create a new folder\n" +
                              "[%s] - Create \"Week\" folders\n" +
-                             "[%s] - Reconfigure file path\n" +
-                             "[%s] - Exit", OPTION_A, OPTION_B, OPTION_C, OPTION_D);
+                             "[%s] - Reconfigure the main file path\n" +
+                             "[%s] - Configure your year and course paths" +
+                             "[%s] - Exit", OPTION_A, OPTION_B, OPTION_C, OPTION_D,
+                                            OPTION_E);
     }
 
     public static final String createFolderOptionsPrompt() {

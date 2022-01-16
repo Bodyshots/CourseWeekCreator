@@ -1,4 +1,3 @@
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -39,7 +38,7 @@ public class Asker {
         return chosenAmount;
     }
 
-    private static final String yesNo(String msg) {
+    public static final String askYesNo(String msg) {
         List<String> options = Arrays.asList(Prompts.YES, Prompts.NO);
         return Asker.decisionString(msg, options);
     }
@@ -54,17 +53,14 @@ public class Asker {
         return decisionNumber(msg, min, max);
     }
 
-    public static String askFilePath() {
-        String startFilePathQ = "Enter the filepath for where your folders should be created:";
+    public static String askFilePath(String msg) {
         Boolean chosen = false;
         String userInput = "";
 
         while (!chosen) {
             try {
-                userInput = askString(startFilePathQ);
-                if (!(new File(userInput).exists())) {
-                    throw new InvalidOptionException();
-                }
+                userInput = askString(msg);
+                if (!FolderChecker.isValidPath(userInput)) throw new InvalidOptionException();
                 else chosen = true;
             }
             catch (InvalidOptionException e) {
@@ -77,7 +73,7 @@ public class Asker {
     public static final String askContinue(String msg) {
         String continueMsg = msg + "\n" + Prompts.continuePrompt();
         System.out.println(continueMsg);
-        return yesNo(continueMsg);
+        return askYesNo(continueMsg);
     }
 
     public static final <E> String askOption(String msg, List<E> options) {
