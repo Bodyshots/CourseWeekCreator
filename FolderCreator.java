@@ -4,7 +4,7 @@ import java.util.List;
 
 public class FolderCreator {
     private static final Integer MAXFOLDERS = 52; // Number of weeks in a year
-    private static final Integer MINFOLDERS = 1;
+    private static final Integer MINFOLDERS = 1; // The user must create at least 1 folder.
 
     private String year;
     private String filePath;
@@ -12,26 +12,48 @@ public class FolderCreator {
     private String weekFilePath;
     private Integer weekTotal;
 
+    /**
+     * @return the main file path
+    */
     public String getFilePath() {
         return this.filePath;
     }
 
+    /**
+     * @return the year folder's name
+    */
     public String getYear() {
         return this.year;
     }
 
+    /**
+     * @return the course's name
+    */
     public String getCourse() {
         return this.courseNme;
     }
 
+    /**
+     * @return the number of weeks the user has in their course folder
+    */
     public Integer getWeekTotal() {
         return this.weekTotal;
     }
 
+    /**
+     * @return where the user's week folders are
+    */
     public String getWeekFilePath() {    
         return this.weekFilePath;
     }
 
+    /** 
+     * Ask the user for their main folder path and set
+     * this.filePath accordingly.
+     * 
+     * Note that the FileCreator instance's other attributes are set to null once
+     * this.filePath is set, as the new main file path is unknown to the instance.
+    */
     private void setUserFilePath() {
         this.filePath = Asker.askFilePath();
         this.year = null;
@@ -40,14 +62,25 @@ public class FolderCreator {
         this.weekFilePath = null;
     }
 
+    /** 
+     * Ask the user for the name of their year folder and set
+     * this.year accordingly.
+    */
     private void setUserYear() {
         this.year = Asker.askString("What year? Eg. \'1st year\', \'2nd year\', etc.");
     }
-    
+
+    /** 
+     * Ask the user for the name of their course folder and set
+     * this.course accordingly.
+    */
     private void setUserCourse() {
         this.courseNme = Asker.askString("What course? Eg. \'CSC207\', \'MAT102\', etc.");
     }
-
+    /** 
+     * Ask the user necessary questions to set the location of the user's week folders to
+     * this.weekFilePath. 
+    */
     private void setUserWeekFilePath() {
         if (filePath == null) this.setUserFilePath();
         if (year == null) this.setUserYear();
@@ -56,10 +89,17 @@ public class FolderCreator {
         this.weekFilePath = new File(filePath + "\\" + String.format("%s\\%s", year, courseNme)).toString();
     }
 
+    /** 
+     * Ask the user for the number of week folders they want and set
+     * this.weekTotal accordingly.
+    */
     private void setUserWeekTotal() {
-        this.weekTotal = Asker.askInteger("How many weeks? Max is 52.", MINFOLDERS, MAXFOLDERS);
+        this.weekTotal = Asker.askValidInteger("How many weeks? Max is 52.", MINFOLDERS, MAXFOLDERS);
     }
 
+    /** 
+     * Create the user's "Week" folders in the appropriate week file path.
+    */
     private void createWeekFolders() {
         this.setUserYear();
         this.setUserCourse();
@@ -81,6 +121,9 @@ public class FolderCreator {
         return;
     }
 
+    /**
+     * Create a folder within a week folder.
+     */
     private final void createFolderInFolder() {
         if (this.weekFilePath == null) {
             Asker.askString("Create your week folders first!");
@@ -108,7 +151,7 @@ public class FolderCreator {
                 else if (userInput.equals(Prompts.OPTION_B)) {
                     String weekNum = "Week ";
                     String weekNumQ = String.format("What week? Select from weeks %d-%d", MINFOLDERS, this.weekTotal);
-                    weekNum += Integer.toString(Asker.askInteger(weekNumQ, MINFOLDERS, this.weekTotal));
+                    weekNum += Integer.toString(Asker.askValidInteger(weekNumQ, MINFOLDERS, this.weekTotal));
                     userInput = Asker.askFolderConfirm(folderNme, weekNum);
                     if (userInput.equals(Prompts.YES)) {
                         createFolder(folderNme, this.getWeekFilePath() + String.format("\\%s", weekNum));
@@ -129,6 +172,11 @@ public class FolderCreator {
         return;
     }
 
+    /**
+     * Create a new folder. Also, say when this folder has been successfully created or not.
+     * @param newFolder the folder to be created
+     * @param desiredPath where the folder is created
+     */
     private final void createFolder(String newFolder, String desiredPath) {
         if (new File(desiredPath + String.format("\\%s", newFolder)).mkdirs()) {            
             System.out.println(String.format("Created folder \"%s\" in %s.", newFolder, desiredPath));
@@ -136,6 +184,9 @@ public class FolderCreator {
         else System.out.println(String.format("Failed to create folder \"%s\". Folder already exists.", newFolder));
     }
 
+    /** 
+     * Run the main functionality of a FolderCreator instance.
+    */
     public void run() {
         this.setUserFilePath();
 
@@ -154,6 +205,9 @@ public class FolderCreator {
         this.exitProgram();
     }
 
+    /** 
+     * Notify the user that the program is exiting and then exit.
+    */
     private void exitProgram() {
         System.out.println("Exiting...");
         System.exit(0);

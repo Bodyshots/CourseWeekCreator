@@ -6,12 +6,21 @@ public class Prompts {
     static final String OPTION_C = "C";
     static final String OPTION_D = "D";
 
+    /**
+     * Display a continue prompt and show the possible yes or no options the
+     * user can choose from
+     * @return the continue prompt
+     */
     public static final String continuePrompt() {
         return String.format("Continue?\n" +
                              "[%s] - Yes\n" +
                              "[%s] - No", YES, NO);
     }
-
+    /**
+     * Display a prompt that shows what the user can do with a FolderCreator
+     * instance
+     * @return the possible options the user can do with a FolderCreator instance
+     */
     public static final String folderOptionsPrompt() {
         return String.format("What do you want to do?\n" +
                              "[%s] - Create a new folder\n" +
@@ -19,7 +28,10 @@ public class Prompts {
                              "[%s] - Reconfigure file path\n" +
                              "[%s] - Exit", OPTION_A, OPTION_B, OPTION_C, OPTION_D);
     }
-
+    /**
+     * Display a prompt that shows where the user can create a new folder
+     * @return the locations where the user can create a new folder
+     */
     public static final String createFolderOptionsPrompt() {
         return String.format("Where do you want to create a new folder?\n" +
                              "[%s] - In each week folder\n" +
