@@ -6,13 +6,29 @@ public class Asker {
 
     private static final Scanner SCANNER = new Scanner(System.in);
 
-    private static <E> String decisionString(String msg, List<E> options) {
+    private static String decisionString(String msg, List<String> options) {
         Boolean chosen = false;
         String userInput = "";
         while (!chosen) {
             try {
                 userInput = SCANNER.nextLine().toUpperCase();
                 if (!options.contains(userInput)) {
+                    throw new InvalidOptionException();
+                }
+                else chosen = true;
+            }
+            catch (InvalidOptionException e) {System.out.println(msg);}
+        }
+        return userInput;
+    }
+
+    private static String decisionNotString(String msg, List<String> options) {
+        Boolean chosen = false;
+        String userInput = "";
+        while (!chosen) {
+            try {
+                userInput = SCANNER.nextLine().toUpperCase();
+                if (options.contains(userInput)) {
                     throw new InvalidOptionException();
                 }
                 else chosen = true;
@@ -40,12 +56,18 @@ public class Asker {
 
     public static final String askYesNo(String msg) {
         List<String> options = Arrays.asList(Prompts.YES, Prompts.NO);
-        return Asker.decisionString(msg, options);
+        System.out.println(Prompts.yesNoPrompt());
+        return Asker.decisionString(msg + "\n" + Prompts.yesNoPrompt(), options);
     }
 
     public static String askString(String msg) {
         System.out.println(msg);
         return SCANNER.nextLine();
+    }
+
+    public static final String askStringNonEmpty(String msg) {
+        System.out.println(msg);
+        return decisionNotString(msg, Arrays.asList(""));
     }
 
     public static Integer askInteger(String msg, Integer min, Integer max) {
@@ -59,7 +81,7 @@ public class Asker {
 
         while (!chosen) {
             try {
-                userInput = askString(msg);
+                userInput = askStringNonEmpty(msg);
                 if (!FolderChecker.isValidPath(userInput)) throw new InvalidOptionException();
                 else chosen = true;
             }
@@ -70,13 +92,32 @@ public class Asker {
         return userInput;
     }
 
+    public static String askFilePath(String msg, String filePath) {
+        Boolean chosen = false;
+        String userInput = "";
+
+        while (!chosen) {
+            try {
+                userInput = askString(msg);
+                if (!FolderChecker.isValidPath(filePath + "\\" + userInput)) {
+                    throw new InvalidOptionException();
+                }
+                else chosen = true;
+            }
+            catch (InvalidOptionException e) {
+                System.out.println("Invalid file path. Please try again.");
+            }
+        }
+        return filePath + "\\" + userInput;
+    }
+
     public static final String askContinue(String msg) {
-        String continueMsg = msg + "\n" + Prompts.continuePrompt();
+        String continueMsg = msg + "\n" + "Continue?";
         System.out.println(continueMsg);
         return askYesNo(continueMsg);
     }
 
-    public static final <E> String askOption(String msg, List<E> options) {
+    public static final String askOption(String msg, List<String> options) {
         System.out.println(msg);
         return decisionString(msg, options);
     }
@@ -90,4 +131,5 @@ public class Asker {
         String yesNoMsg = String.format("Creating \"%s\" in %s.", newFolder, folder);
         return Asker.askContinue(yesNoMsg);
     }
+
 }

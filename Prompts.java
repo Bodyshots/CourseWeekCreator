@@ -7,9 +7,8 @@ public class Prompts {
     static final String OPTION_D = "D";
     static final String OPTION_E = "E";
 
-    public static final String continuePrompt() {
-        return String.format("Continue?\n" +
-                             "[%s] - Yes\n" +
+    public static final String yesNoPrompt() {
+        return String.format("[%s] - Yes\n" +
                              "[%s] - No", YES, NO);
     }
 
@@ -18,7 +17,7 @@ public class Prompts {
                              "[%s] - Create a new folder\n" +
                              "[%s] - Create \"Week\" folders\n" +
                              "[%s] - Reconfigure the main file path\n" +
-                             "[%s] - Configure your year and course paths" +
+                             "[%s] - Configure your year and course paths\n" +
                              "[%s] - Exit", OPTION_A, OPTION_B, OPTION_C, OPTION_D,
                                             OPTION_E);
     }

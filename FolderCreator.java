@@ -42,11 +42,11 @@ public class FolderCreator {
     }
 
     private void setUserYear() {
-        this.year = Asker.askString("What year? Eg. \'1st year\', \'2nd year\', etc.");
+        this.year = Asker.askStringNonEmpty("What year? Eg. \'1st year\', \'2nd year\', etc.");
     }
     
     private void setUserCourse() {
-        this.courseNme = Asker.askString("What course? Eg. \'CSC207\', \'MAT102\', etc.");
+        this.courseNme = Asker.askStringNonEmpty("What course? Eg. \'CSC207\', \'MAT102\', etc.");
     }
 
     private void setUserWeekFilePath() {
@@ -96,7 +96,7 @@ public class FolderCreator {
         while (!finished) {
             String userInput = Asker.askOption(Prompts.createFolderOptionsPrompt(), options);
             if (!userInput.equals(Prompts.OPTION_D)) {
-                String folderNme = Asker.askString("What is this folder\'s name?");
+                String folderNme = Asker.askStringNonEmpty("What is this new folder\'s name?");
 
                 if (userInput.equals(Prompts.OPTION_A)) {
                     userInput = Asker.askFolderConfirm(folderNme, String.format("Weeks 1-%d", this.weekTotal));
@@ -128,11 +128,13 @@ public class FolderCreator {
 
     private final void createMultiFolders(String folderNme) {
         String weekFolder = this.getWeekFilePath() + "\\Week ";
+        String numberQ = "Number these folders? (eg. Lab 1, Lab 2, etc.)";
 
+        System.out.println(numberQ);
         String userInput = Asker.askYesNo("Number these folders? (eg. Lab 1, Lab 2, etc.)");
         if (userInput.equals(Prompts.YES)) {
             for (int i = 1; i < this.weekTotal + 1; i++) {
-            String currentFolderNme = folderNme + String.format("%d", i);
+            String currentFolderNme = folderNme + String.format(" %d", i);
             createFolder(currentFolderNme, weekFolder + String.format("%d", i));
             }
         }
@@ -182,14 +184,13 @@ public class FolderCreator {
         String tempYear = "";
         String proposedPath = "";
         Integer tempWeekTotal = 0;
-        String yearQ = "Enter the name of your year folder here.\nNote that this folder must be in your " +
-        "configured main path and that year and course path configuration is done automatically when " +
+        String yearQ = "Enter the name of your year folder here.\nNote that the year folder must be in your " +
+        "configured main path.\nThe year and course paths are also configured automatically when " +
         "\"Week\" folders are created:";
-        String courseQ = "Enter the name of your course folder.\nPlease ensure this folder" +
-        "has \"Week\" folders that are contiguous and properly numbered (eg. has \"Week\" folders from 1-10):";
+        String courseQ = "Enter the name of your course folder.\nPlease ensure this folder " +
+        "has \"Week\" folders that are contiguous and properly numbered\n(eg. has \"Week\" folders from 1-10):";
 
-        tempYear = Asker.askFilePath(yearQ);
-        String yearPath = this.filePath + "\\" + tempYear;
+        String yearPath = Asker.askFilePath(yearQ, this.filePath);
         if (!FolderChecker.isPopFolder(yearPath)) return;
 
         String [] folderFiles = FolderChecker.listFolderFiles(yearPath);
@@ -222,7 +223,7 @@ public class FolderCreator {
         for (String file: files) {
             if (file.startsWith("Week ")) {
                 weeks += 1;
-                String weekFolder = String.format("Week %d", weeks + 1);
+                String weekFolder = String.format("Week %d", weeks);
                 if (!file.equals(weekFolder)) missingFolders.add(weekFolder);
             }
         }
