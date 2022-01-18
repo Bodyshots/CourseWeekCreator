@@ -11,8 +11,8 @@ public class Asker {
         String userInput = "";
         while (!chosen) {
             try {
-                userInput = SCANNER.nextLine().toUpperCase();
-                if (!options.contains(userInput)) {
+                userInput = SCANNER.nextLine();
+                if (!options.contains(userInput.toUpperCase())) {
                     throw new InvalidOptionException();
                 }
                 else chosen = true;
@@ -27,8 +27,8 @@ public class Asker {
         String userInput = "";
         while (!chosen) {
             try {
-                userInput = SCANNER.nextLine().toUpperCase();
-                if (options.contains(userInput)) {
+                userInput = SCANNER.nextLine();
+                if (options.contains(userInput.toUpperCase())) {
                     throw new InvalidOptionException();
                 }
                 else chosen = true;
@@ -65,9 +65,9 @@ public class Asker {
         return SCANNER.nextLine();
     }
 
-    public static final String askStringNonEmpty(String msg) {
+    public static String askNotString(String msg, List<String> notOptions) {
         System.out.println(msg);
-        return decisionNotString(msg, Arrays.asList(""));
+        return decisionNotString(msg, notOptions);
     }
 
     public static Integer askInteger(String msg, Integer min, Integer max) {
@@ -81,7 +81,7 @@ public class Asker {
 
         while (!chosen) {
             try {
-                userInput = askStringNonEmpty(msg);
+                userInput = askNotString(msg, Arrays.asList(""));
                 if (!FolderChecker.isValidPath(userInput)) throw new InvalidOptionException();
                 else chosen = true;
             }

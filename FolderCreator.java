@@ -42,11 +42,11 @@ public class FolderCreator {
     }
 
     private void setUserYear() {
-        this.year = Asker.askStringNonEmpty("What year? Eg. \'1st year\', \'2nd year\', etc.");
+        this.year = Asker.askNotString("What year? Eg. \'1st year\', \'2nd year\', etc.", Arrays.asList(""));
     }
     
     private void setUserCourse() {
-        this.courseNme = Asker.askStringNonEmpty("What course? Eg. \'CSC207\', \'MAT102\', etc.");
+        this.courseNme = Asker.askNotString("What course? Eg. \'CSC207\', \'MAT102\', etc.", Arrays.asList(""));
     }
 
     private void setUserWeekFilePath() {
@@ -67,7 +67,7 @@ public class FolderCreator {
         this.setUserWeekFilePath();
         this.setUserWeekTotal();
 
-        String userInput = Asker.askWeekFolderConfirm(this.getWeekFilePath(), this.getWeekTotal());
+        String userInput = Asker.askWeekFolderConfirm(this.getWeekFilePath(), this.getWeekTotal()).toUpperCase();
         if (userInput.equals(Prompts.NO)) {
             this.year = null;
             this.courseNme = null;
@@ -77,7 +77,7 @@ public class FolderCreator {
         }
         for (int i = 1; i < weekTotal + 1; i++) createFolder(String.format("Week %d", i), this.weekFilePath);
 
-        userInput = Asker.askContinue("Finished.");
+        userInput = Asker.askContinue("Finished.").toUpperCase();
         if (userInput.equals(Prompts.NO)) this.exitProgram();
         return;
     }
@@ -94,30 +94,30 @@ public class FolderCreator {
                                              Prompts.OPTION_D);
         Boolean finished = false;
         while (!finished) {
-            String userInput = Asker.askOption(Prompts.createFolderOptionsPrompt(), options);
+            String userInput = Asker.askOption(Prompts.createFolderOptionsPrompt(), options).toUpperCase();
             if (!userInput.equals(Prompts.OPTION_D)) {
-                String folderNme = Asker.askStringNonEmpty("What is this new folder\'s name?");
+                String folderNme = Asker.askNotString("What is this new folder\'s name?", Arrays.asList(""));
 
                 if (userInput.equals(Prompts.OPTION_A)) {
-                    userInput = Asker.askFolderConfirm(folderNme, String.format("Weeks 1-%d", this.weekTotal));
+                    userInput = Asker.askFolderConfirm(folderNme, String.format("Weeks 1-%d", this.weekTotal)).toUpperCase();
                     if (userInput.equals(Prompts.YES)) createMultiFolders(folderNme);
                 }
                 else if (userInput.equals(Prompts.OPTION_B)) {
                     String weekNum = "Week ";
                     String weekNumQ = String.format("What week? Select from weeks %d-%d", MINFOLDERS, this.weekTotal);
                     weekNum += Integer.toString(Asker.askInteger(weekNumQ, MINFOLDERS, this.weekTotal));
-                    userInput = Asker.askFolderConfirm(folderNme, weekNum);
+                    userInput = Asker.askFolderConfirm(folderNme, weekNum).toUpperCase();
                     if (userInput.equals(Prompts.YES)) {
                         createFolder(folderNme, this.getWeekFilePath() + String.format("\\%s", weekNum));
                     }
                 }
                 else {
-                    userInput = Asker.askFolderConfirm(folderNme, String.format("%s", courseNme));
+                    userInput = Asker.askFolderConfirm(folderNme, String.format("%s", courseNme)).toUpperCase();
                     if (userInput.equals(Prompts.YES)) {
                         createFolder(folderNme, this.getFilePath() + String.format("\\%s", courseNme));
                     }
                 }
-                userInput = Asker.askContinue("Finished.");
+                userInput = Asker.askContinue("Finished.").toUpperCase();
                 if (userInput.equals(Prompts.NO)) this.exitProgram();
                 return;
             }
@@ -128,13 +128,13 @@ public class FolderCreator {
 
     private final void createMultiFolders(String folderNme) {
         String weekFolder = this.getWeekFilePath() + "\\Week ";
-        String numberQ = "Number these folders? (eg. Lab 1, Lab 2, etc.)";
+        String numberQ = "Number these folders? (eg. Lab1, Lab2, etc.)";
 
         System.out.println(numberQ);
-        String userInput = Asker.askYesNo("Number these folders? (eg. Lab 1, Lab 2, etc.)");
+        String userInput = Asker.askYesNo(numberQ).toUpperCase();
         if (userInput.equals(Prompts.YES)) {
             for (int i = 1; i < this.weekTotal + 1; i++) {
-            String currentFolderNme = folderNme + String.format(" %d", i);
+            String currentFolderNme = folderNme + String.format("%d", i);
             createFolder(currentFolderNme, weekFolder + String.format("%d", i));
             }
         }
@@ -163,7 +163,7 @@ public class FolderCreator {
                                              Prompts.OPTION_E);
         Boolean exitProgram = false;
         while (!exitProgram) {
-            String userInput = Asker.askOption(Prompts.folderOptionsPrompt(), options);
+            String userInput = Asker.askOption(Prompts.folderOptionsPrompt(), options).toUpperCase();
             if (userInput.equals(Prompts.OPTION_A)) this.createFolderInFolder();
             else if (userInput.equals(Prompts.OPTION_B)) this.createWeekFolders();
             else if (userInput.equals(Prompts.OPTION_C)) this.setUserFilePath();
@@ -217,29 +217,30 @@ public class FolderCreator {
 
     private Integer configureWeekTotal(String weekPath) {
         String [] files = FolderChecker.listFolderFiles(weekPath);
-        List<String> missingFolders = new ArrayList<>();
-        Arrays.sort(files);
-        Integer weeks = 0;
-        for (String file: files) {
-            if (file.startsWith("Week ")) {
-                weeks += 1;
-                String weekFolder = String.format("Week %d", weeks);
-                if (!file.equals(weekFolder)) missingFolders.add(weekFolder);
-            }
+        List<String> weekFolders = new ArrayList<>();
+        for (String file: files) if (file.startsWith("Week ")) weekFolders.add(file);
+        Integer weekFolderNum = weekFolders.size();
+
+        List<String> requiredFolders = new ArrayList<>();
+        for (int i = 1; i < weekFolderNum + 1; i++) requiredFolders.add(String.format("Week %d", i));
+        for (int i = 1; i < weekFolderNum + 1; i++) {
+            String weekNum = String.format("Week %d", i);
+            if (weekFolders.contains(weekNum)) requiredFolders.remove(weekNum);
         }
 
-        if (!missingFolders.isEmpty()) {
-            for (String missingFolder: missingFolders) {
-                System.out.println(String.format("Missing %s from Weeks 1-%d!", missingFolder, weeks));
+        if (!requiredFolders.isEmpty()) {
+            for (String missingFolder: requiredFolders) {
+                System.out.println(String.format("Missing %s from Weeks 1-%d!", missingFolder, weekFolderNum));
             }
             System.out.println("Please ensure your week folders are contiguous and properly numbered!");
             return -1;
         }
-        else if (weeks == 0) {
+        else if (weekFolderNum == 0) {
             System.out.println("There are no \"Week\" folders in this year folder!");
             return -1;
         }
-        return weeks;
+        System.out.println("\nSuccess!\n");
+        return weekFolderNum;
     }
 
     private void exitProgram() {
