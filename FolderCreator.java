@@ -93,10 +93,6 @@ public class FolderCreator {
         return;
     }
 
-    // private final void sortFolders() { // needs to sort list by #s, comparator???
-
-    // }
-
     private final void createFolderInFolder() {
         List<String> options = Arrays.asList(Prompts.OPTION_A,
                                              Prompts.OPTION_B,
@@ -120,11 +116,13 @@ public class FolderCreator {
                         descripts.add(String.format("All \"%s\" folders", folderCat));
                         options.add(Character.toString((Prompts.OPTION_A.charAt(0) + i)));
                     }
+                    
                     System.out.println("Which folder do you want to create your folders in?");
                     userInput = Asker.askOption(Prompts.infOptions(options, descripts), options).toUpperCase();
                     if (userInput.equals(options.get(options.size() - 1))) return; // back
 
                     List<String> chosenCat = folderCats.get(options.indexOf(userInput));
+                    FolderChecker.sortFolders(chosenCat);
                     String cat = chosenCat.get(0).split(" ")[0];
                     userInput = Asker.askFolderInConfirm(folderNme, String.format("All %s folders", cat)).toUpperCase();
                     if (userInput.equals(Prompts.YES)) createMultiFolders(folderNme, chosenCat);
@@ -181,76 +179,6 @@ public class FolderCreator {
         }
         else System.out.println(String.format("Failed to create folder \"%s\". Folder already exists.", newFolder));
     }
-
-    // private final void configureYearAndCourse() {
-    //     if (FolderChecker.folderEmpty(this.filePath)) {
-    //         System.out.println("There are no possible year folders in your current main file path!");
-    //         return;
-    //     }
-
-    //     boolean configured = false;
-    //     String tempCourse = "";
-    //     String tempYear = "";
-    //     String proposedPath = "";
-    //     Integer tempFolderTotal = 0;
-    //     String yearQ = "Enter the name of your year folder here.\nNote that the year folder must be in your " +
-    //     "configured main path.\nThe year and course paths are also configured automatically when " +
-    //     "\"Week\" folders are created:";
-    //     String courseQ = "Enter the name of your course folder.\nPlease ensure this folder " +
-    //     "has \"Week\" folders that are contiguous and properly numbered\n(eg. has \"Week\" folders from 1-10):";
-
-    //     String yearPath = Asker.askFilePath(yearQ, this.filePath);
-    //     if (!FolderChecker.isPopFolder(yearPath)) return;
-
-    //     String [] folderFiles = FolderChecker.listFolderFiles(yearPath);
-    //     while (!configured) {
-    //         tempCourse = Asker.askString(courseQ);
-    //         proposedPath = yearPath + String.format("\\%s", tempCourse);
-
-    //         if (!Arrays.asList(folderFiles).contains(tempCourse)) {
-    //             System.out.println("This file doesn\'t exist!");
-    //         }
-    //         else if (!FolderChecker.isPopFolder(yearPath));
-    //         else configured = true;
-    //     }
-
-    //     tempFolderTotal = configureFolderTotal(proposedPath);
-    //     if (tempFolderTotal == -1) return;
-
-    //     this.courseNme = tempCourse;
-    //     this.year = tempYear;
-    //     this.weekFilePath = proposedPath;
-    //     this.folderTotal = tempFolderTotal;
-
-    // }
-
-    // private Integer configureFolderTotal(String weekPath) {
-    //     String [] files = FolderChecker.listFolderFiles(weekPath);
-    //     List<String> weekFolders = new ArrayList<>();
-    //     for (String file: files) if (file.startsWith("Week ")) weekFolders.add(file);
-    //     Integer weekFolderNum = weekFolders.size();
-
-    //     List<String> requiredFolders = new ArrayList<>();
-    //     for (int i = 1; i < weekFolderNum + 1; i++) requiredFolders.add(String.format("Week %d", i));
-    //     for (int i = 1; i < weekFolderNum + 1; i++) {
-    //         String weekNum = String.format("Week %d", i);
-    //         if (weekFolders.contains(weekNum)) requiredFolders.remove(weekNum);
-    //     }
-
-    //     if (!requiredFolders.isEmpty()) {
-    //         for (String missingFolder: requiredFolders) {
-    //             System.out.println(String.format("Missing %s from Weeks 1-%d!", missingFolder, weekFolderNum));
-    //         }
-    //         System.out.println("Please ensure your week folders are contiguous and properly numbered!");
-    //         return -1;
-    //     }
-    //     else if (weekFolderNum == 0) {
-    //         System.out.println("There are no \"Week\" folders in this year folder!");
-    //         return -1;
-    //     }
-    //     System.out.println("\nSuccess!\n");
-    //     return weekFolderNum;
-    // }
 
     private void exitProgram() {
         System.out.println("Exiting...");

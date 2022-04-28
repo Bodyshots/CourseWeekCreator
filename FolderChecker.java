@@ -1,6 +1,8 @@
 import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
 
 public class FolderChecker {
     public static final boolean isValidPath(String file) {
@@ -62,5 +64,10 @@ public class FolderChecker {
             }
         }
         return cats;
+    }
+
+    public static final void sortFolders(List<String> folders) {
+        Comparator<String> compare = new FolderComparator();
+        Collections.sort(folders, compare);
     }
 }
