@@ -56,8 +56,9 @@ public class Asker {
 
     public static final String askYesNo(String msg) {
         List<String> options = Arrays.asList(Prompts.YES, Prompts.NO);
-        System.out.println(Prompts.yesNoPrompt());
-        return Asker.decisionString(msg + "\n" + Prompts.yesNoPrompt(), options);
+        String displayMsg = msg + "\n" + Prompts.yesNoPrompt();
+        System.out.println(displayMsg);
+        return Asker.decisionString(displayMsg, options);
     }
 
     public static String askString(String msg) {
@@ -81,8 +82,12 @@ public class Asker {
 
         while (!chosen) {
             try {
-                userInput = askNotString(msg, Arrays.asList(""));
-                if (!FolderChecker.isValidPath(userInput)) throw new InvalidOptionException();
+                userInput = askString(msg);
+                if (userInput == "") {
+                    userInput = PathFinder.getDefault();
+                    chosen = true;
+                }
+                else if (!FolderChecker.isValidPath(userInput)) throw new InvalidOptionException();
                 else chosen = true;
             }
             catch (InvalidOptionException e) {
@@ -112,9 +117,7 @@ public class Asker {
     }
 
     public static final String askContinue(String msg) {
-        String continueMsg = msg + "\n" + "Continue?";
-        System.out.println(continueMsg);
-        return askYesNo(continueMsg);
+        return askYesNo(msg + "\n" + "Continue?");
     }
 
     public static final String askOption(String msg, List<String> options) {
@@ -123,12 +126,18 @@ public class Asker {
     }
 
     public static final String askWeekFolderConfirm(String filePath, Integer weekTotal) {
-        String yesNoMsg = String.format("Creating %d folders at %s.", weekTotal, filePath);
+        String yesNoMsg = String.format("Creating %d folders at:\n%s.", weekTotal, filePath);
         return Asker.askContinue(yesNoMsg);
     }
 
-    public static final String askFolderConfirm(String newFolder, String folder) {
-        String yesNoMsg = String.format("Creating \"%s\" in %s.", newFolder, folder);
+    public static final String askFolderInConfirm(String newFolder, String folder) {
+        String yesNoMsg = String.format("Creating \"%s\" in:\n%s.", newFolder, folder);
+        return Asker.askContinue(yesNoMsg);
+    }
+
+    public static final String askFoldersConfirm(String folderNme, String filePath, Integer folderTotal) {
+        String yesNoMsg = String.format("Creating %d \"%s\" folders at:\n%s", folderTotal, folderNme,
+                                                                                 filePath);
         return Asker.askContinue(yesNoMsg);
     }
 

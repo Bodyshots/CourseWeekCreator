@@ -1,4 +1,6 @@
 import java.io.File;
+import java.util.List;
+import java.util.ArrayList;
 
 public class FolderChecker {
     public static final boolean isValidPath(String file) {
@@ -29,4 +31,36 @@ public class FolderChecker {
         return true;
     }
 
+    public static final List<List<String>> listFolderCats(String filePath) {
+        String [] files = FolderChecker.listFolderFiles(filePath);
+        List<List<String>> cats = new ArrayList<List<String>>();
+        int fileIndex = 0;
+
+        while (fileIndex < files.length) {
+            if (!FolderChecker.isFolder(files[fileIndex])) {
+                fileIndex ++;
+            }
+            else {
+                List<String> cat = new ArrayList<>();
+                String [] folder = files[fileIndex].split(" ");
+
+                int existingCatIndex = -1;
+                int catIndex = 0;
+                while (existingCatIndex == -1 && catIndex < cats.size()) { // goes over existing cats
+                    if (cats.get(catIndex).get(0).startsWith(folder[0])) {
+                        existingCatIndex = catIndex;
+                    }
+                    catIndex ++;
+                }
+                if (existingCatIndex != -1) cat = cats.get(existingCatIndex); // .add(files[fileIndex]);
+    
+                while (fileIndex < files.length && files[fileIndex].startsWith(folder[0])) {
+                    cat.add(files[fileIndex]); // add files to existing category
+                    fileIndex ++; // stops on different category
+                }
+                if (existingCatIndex == -1) cats.add(cat); // adds cat, if hasn't existed yet
+            }
+        }
+        return cats;
+    }
 }
