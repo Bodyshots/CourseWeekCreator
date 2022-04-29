@@ -9,7 +9,7 @@ public class Main {
         System.exit(0);
     }
 
-    public void run() {
+    public static void run() {
         FolderCreator folderCreator = new FolderCreator();
         folderCreator.setFilePath();
         List<String> options = Arrays.asList(Prompts.OPTION_A,
@@ -22,17 +22,18 @@ public class Main {
             String userInput = Asker.askOption(Prompts.folderOptionsPrompt(folderCreator.getFilePath()), options).toUpperCase();
             if (userInput.equals(Prompts.OPTION_A)) folderCreator.setFBehaviour(new CreateMass());
             else if (userInput.equals(Prompts.OPTION_B)) folderCreator.setFBehaviour(new CreateWeeks());
-            else if (userInput.equals(Prompts.OPTION_C)) folderCreator.setFilePath();
+            else if (userInput.equals(Prompts.OPTION_C)) {
+                folderCreator.setFBehaviour(new CreateNull());
+                folderCreator.setFilePath();
+            }
             else if (userInput.equals(Prompts.OPTION_D)) folderCreator.setFBehaviour(new CreateFolderInFolder());
             else exitProgram = true;
-            if (!exitProgram || !(userInput.equals(Prompts.OPTION_C))) folderCreator.create();
-
-
+            if (!exitProgram) folderCreator.create();
         }
         Main.exitProgram();
     }
 
-    public void main(String[] args) {
-        this.run();
+    public static void main(String[] args) {
+        Main.run();
     }
 }

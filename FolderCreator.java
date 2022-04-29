@@ -28,7 +28,13 @@ public class FolderCreator {
                 if (tempFilePath == "") tempFilePath = PathFinder.getDefault();
             }
             else {
-                if (this.filePath != null) tempFilePath = this.filePath;
+                if (tempFilePath != null && !tempFilePath.equals("") 
+                     && this.filePath == null) {
+                    this.filePath = tempFilePath;
+                }
+                else if (this.filePath == null) this.filePath = PathFinder.getDefault();
+
+                tempFilePath = this.filePath;
                 userInput = Asker.askYesNo(Prompts.continueFilePath(tempFilePath)).toUpperCase();
                 if (userInput.equals(Prompts.YES)) {
                     confirmPath = true;
