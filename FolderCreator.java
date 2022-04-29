@@ -1,123 +1,100 @@
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class FolderCreator {
-    private static final Integer MAXFOLDERS = 52; // Number of weeks in a year
-    private static final Integer MINFOLDERS = 1; // The user must create at least 1 folder.
+    private static final Integer MINFOLDERS = 1;
+    static final String DONE = "Finished";
+    static final String EXIT = "Exiting...";
 
-    private String year;
     private String filePath;
-    private String courseNme;
-    private String weekFilePath;
-    private Integer weekTotal;
 
-    /**
-     * @return the main file path
-    */
-    public String getFilePath() {
-        return this.filePath;
+    private String getWeekPath() {
+        return String.format("%s\\", this.filePath) + this.getYear() +
+               String.format("\\%s", this.getCourse());
     }
 
-    /**
-     * @return the year folder's name
-    */
-    public String getYear() {
-        return this.year;
+    private String getYear() {
+        return Asker.askNotString(Asker.YEARQ, Arrays.asList(""));
+    }
+    
+    private String getCourse() {
+        return Asker.askNotString(Asker.COURSEQ, Arrays.asList(""));
     }
 
-    /**
-     * @return the course's name
-    */
-    public String getCourse() {
-        return this.courseNme;
+    private void setFilePath() {
+        String userInput = "";
+        boolean confirmPath = false;
+        String tempFilePath = "";
+        while (this.filePath == null || !confirmPath) {
+            if (tempFilePath == null) {
+                tempFilePath = Asker.askFilePath(Asker.FILEPATHQ);
+                if (tempFilePath == "") tempFilePath = PathFinder.getDefault();
+            }
+            else {
+                if (this.filePath != null) tempFilePath = this.filePath;
+                userInput = Asker.askYesNo(Prompts.continueFilePath(tempFilePath)).toUpperCase();
+                if (userInput.equals(Prompts.YES)) {
+                    confirmPath = true;
+                    if (this.filePath == null) this.filePath = tempFilePath;
+                }
+                else {
+                    this.filePath = null;
+                    tempFilePath = null;
+                }
+            }
+        }
     }
 
-    /**
-     * @return the number of weeks the user has in their course folder
-    */
-    public Integer getWeekTotal() {
-        return this.weekTotal;
+    private Integer setFolderTotal() {
+        return Asker.askInteger(Asker.FOLDERTOTALQ, MINFOLDERS, Integer.MAX_VALUE);
     }
 
-    /**
-     * @return where the user's week folders are
-    */
-    public String getWeekFilePath() {    
-        return this.weekFilePath;
+    private final void createMassFolders() {
+        int folderTotal = this.setFolderTotal();
+        this.setFilePath();
+        String folderNme = Asker.askNotString(Asker.NEWFOLDERQ, Arrays.asList(""));
+        
+        String userInput = Asker.askFoldersConfirm(folderNme, filePath, folderTotal).toUpperCase();
+        if (userInput.equals(Prompts.NO)) return;
+
+        for (int i = 1; i < folderTotal + 1; i++) {
+            createFolder(String.format("%s %d", folderNme, i), this.filePath);
+        }
+
+        userInput = Asker.askContinue(DONE).toUpperCase();
+        if (userInput.equals(Prompts.NO)) this.exitProgram();
     }
 
-    /** 
-     * Ask the user for their main folder path and set
-     * this.filePath accordingly.
-     * 
-     * Note that the FileCreator instance's other attributes are set to null once
-     * this.filePath is set, as the new main file path is unknown to the instance.
-    */
-    private void setUserFilePath() {
-        this.filePath = Asker.askFilePath();
-        this.year = null;
-        this.courseNme = null;
-        this.weekTotal = null;
-        this.weekFilePath = null;
-    }
+    private final void createMassFolders (int folderTotal, String filePath, String folderNme) {
+        String userInput = Asker.askFoldersConfirm(folderNme, filePath, folderTotal).toUpperCase();
+        if (userInput.equals(Prompts.NO)) return;
 
-    /** 
-     * Ask the user for the name of their year folder and set
-     * this.year accordingly.
-    */
-    private void setUserYear() {
-        this.year = Asker.askString("What year? Eg. \'1st year\', \'2nd year\', etc.");
-    }
+        for (int i = 1; i < folderTotal + 1; i++) {
+            createFolder(String.format("%s %d", folderNme, i), this.filePath);
+        }
 
-    /** 
-     * Ask the user for the name of their course folder and set
-     * this.course accordingly.
-    */
-    private void setUserCourse() {
-        this.courseNme = Asker.askString("What course? Eg. \'CSC207\', \'MAT102\', etc.");
-    }
-    /** 
-     * Ask the user necessary questions to set the location of the user's week folders to
-     * this.weekFilePath. 
-    */
-    private void setUserWeekFilePath() {
-        if (filePath == null) this.setUserFilePath();
-        if (year == null) this.setUserYear();
-        if (courseNme == null) this.setUserCourse();
-
-        this.weekFilePath = new File(filePath + "\\" + String.format("%s\\%s", year, courseNme)).toString();
-    }
-
-    /** 
-     * Ask the user for the number of week folders they want and set
-     * this.weekTotal accordingly.
-    */
-    private void setUserWeekTotal() {
-        this.weekTotal = Asker.askValidInteger("How many weeks? Max is 52.", MINFOLDERS, MAXFOLDERS);
+        userInput = Asker.askContinue(DONE).toUpperCase();
+        if (userInput.equals(Prompts.NO)) this.exitProgram();
     }
 
     /** 
      * Create the user's "Week" folders in the appropriate week file path.
     */
     private void createWeekFolders() {
-        this.setUserYear();
-        this.setUserCourse();
-        this.setUserWeekFilePath();
-        this.setUserWeekTotal();
 
-        String userInput = Asker.askWeekFolderConfirm(this.getWeekFilePath(), this.getWeekTotal());
-        if (userInput.equals(Prompts.NO)) {
-            this.year = null;
-            this.courseNme = null;
-            this.weekTotal = null;
-            this.weekFilePath = null;
-            return;
-        }
-        for (int i = 1; i < weekTotal + 1; i++) createFolder(String.format("Week %d", i), this.weekFilePath);
+        String userInput = Asker.askContinue(Prompts.weekFolderExplain()).toUpperCase();
+        if (userInput.equals(Prompts.NO)) return; // Don't create "week" folders
 
-        userInput = Asker.askContinue("Finished.");
-        if (userInput.equals(Prompts.NO)) this.exitProgram();
+        this.setFilePath();
+        int folderTotal = this.setFolderTotal();
+        String weekPath = this.getWeekPath();
+
+        userInput = Asker.askFoldersConfirm("Week", filePath, folderTotal).toUpperCase();;
+        if (userInput.equals(Prompts.NO)) return;
+
+        this.createMassFolders(folderTotal, weekPath, "Week");
         return;
     }
 
@@ -125,51 +102,96 @@ public class FolderCreator {
      * Create a folder within a week folder.
      */
     private final void createFolderInFolder() {
-        if (this.weekFilePath == null) {
-            Asker.askString("Create your week folders first!");
-            return;
-        }
-
         List<String> options = Arrays.asList(Prompts.OPTION_A,
                                              Prompts.OPTION_B,
                                              Prompts.OPTION_C,
                                              Prompts.OPTION_D);
         Boolean finished = false;
+        this.setFilePath();
+
         while (!finished) {
-            String userInput = Asker.askOption(Prompts.createFolderOptionsPrompt(), options);
+            String userInput = Asker.askOption(Prompts.createFolderOptionsPrompt(), options).toUpperCase();
             if (!userInput.equals(Prompts.OPTION_D)) {
-                String folderNme = Asker.askString("What is this folder\'s name?");
+                String folderNme = Asker.askNotString(Asker.NEWFOLDERQ, Arrays.asList(""));
 
                 if (userInput.equals(Prompts.OPTION_A)) {
-                    userInput = Asker.askFolderConfirm(folderNme, String.format("Weeks 1-%d", this.weekTotal));
-                    if (userInput.equals(Prompts.YES)) {
-                        for (int i = 1; i < this.weekTotal + 1; i++) {
-                            createFolder(folderNme, this.getWeekFilePath() + String.format("\\Week %d", i));
-                        }
+                    List<List<String>> folderCats = FolderChecker.listFolderCats(filePath);
+                    options = new ArrayList<>(); // valid choices
+                    List<String> descripts = new ArrayList<>(); // descriptions of each option
+                    for (int i = 0; i < folderCats.size(); i++) {
+                        // List<String> cat: folderCats) { // later might need a "next" option to handle more than Z options
+                        String folderCat = folderCats.get(i).get(0).split(" ")[0];
+                        String descriptsStr = String.format("All \"%s\" folders", folderCat);
+                        if (new File(folderCats.get(i).get(0)).isHidden()) descriptsStr += " (Hidden)";
+                        descripts.add(descriptsStr);
+                        options.add(Character.toString((Prompts.OPTION_A.charAt(0) + i)));
                     }
+                    
+                    System.out.println(Asker.PICKFOLDERQ);
+                    userInput = Asker.askOption(Prompts.infOptions(options, descripts), options).toUpperCase();
+                    if (userInput.equals(options.get(options.size() - 1))) return; // back
+
+                    List<String> chosenCat = folderCats.get(options.indexOf(userInput));
+                    String cat = chosenCat.get(0).split(" ")[0];
+                    userInput = Asker.askFolderInConfirm(folderNme, String.format("All %s folders", cat)).toUpperCase();
+                    if (userInput.equals(Prompts.YES)) {
+                        FolderChecker.sortFolders(chosenCat);
+                        userInput = Asker.askYesNo(Asker.NUMBERFOLDERQ).toUpperCase();
+                        if (userInput.equals(Prompts.YES)) createMultiFolders(folderNme, chosenCat, true);
+                        else createMultiFolders(folderNme, chosenCat, false);
+                    }
+                    else return; // no on "continue"
                 }
                 else if (userInput.equals(Prompts.OPTION_B)) {
-                    String weekNum = "Week ";
-                    String weekNumQ = String.format("What week? Select from weeks %d-%d", MINFOLDERS, this.weekTotal);
-                    weekNum += Integer.toString(Asker.askValidInteger(weekNumQ, MINFOLDERS, this.weekTotal));
-                    userInput = Asker.askFolderConfirm(folderNme, weekNum);
-                    if (userInput.equals(Prompts.YES)) {
-                        createFolder(folderNme, this.getWeekFilePath() + String.format("\\%s", weekNum));
+                    List<String> folders = FolderChecker.listFolders(this.filePath);
+                    options = new ArrayList<>();
+                    for (int i = 0; i < folders.size(); i++) {
+                        options.add(Character.toString((Prompts.OPTION_A.charAt(0) + i)));
                     }
-                }
-                else {
-                    userInput = Asker.askFolderConfirm(folderNme, String.format("%s", courseNme));
+
+                    System.out.println(Asker.PICKFOLDERQ);
+                    userInput = Asker.askOption(Prompts.infOptions(options, folders), options).toUpperCase();
+                    if (userInput.equals(options.get(options.size() - 1))) return; // back
+
+                    String chosenFolder = folders.get(options.indexOf(userInput));
+
+                    Integer folderNum = Asker.askInteger(Asker.FOLDERTOTALQ, MINFOLDERS, Integer.MAX_VALUE);
+                    userInput = Asker.askFolderInConfirm(folderNme, chosenFolder).toUpperCase();
                     if (userInput.equals(Prompts.YES)) {
-                        createFolder(folderNme, this.getFilePath() + String.format("\\%s", courseNme));
+                        for (int i = 0; i < folderNum; i++) {
+                            String newFolder = folderNme + String.format(" %d", i + 1);
+                            createFolder(newFolder, this.filePath + String.format("\\%s", chosenFolder));
+                        }
                     }
+                    else return;
                 }
-                userInput = Asker.askContinue("Finished.");
+                else { // "Where I'm at now"
+                    userInput = Asker.askFolderInConfirm(folderNme, this.filePath).toUpperCase();
+                    if (userInput.equals(Prompts.YES)) createFolder(folderNme, this.filePath);
+                    else return; // no on "continue"
+                }
+                userInput = Asker.askContinue(DONE).toUpperCase();
                 if (userInput.equals(Prompts.NO)) this.exitProgram();
-                return;
+                return; // folders created
             }
             else finished = true;
         }
-        return;
+        return; // enters back (not "continue" back)
+    }
+
+    private final void createMultiFolders(String folderNme, List<String> folders, boolean number) {
+        if (number) {
+            for (int i = 0; i < folders.size(); i++) {
+                String currentFolderNme = folderNme + String.format(" %d", i + 1);
+                createFolder(currentFolderNme, this.filePath + String.format("\\%s", folders.get(i)));
+            }
+        }
+        else
+        {
+            for (int i = 1; i < folders.size() + 1; i++) {
+                createFolder(folderNme, this.filePath + folders.get(i));
+            }
+        }
     }
 
     /**
@@ -184,33 +206,28 @@ public class FolderCreator {
         else System.out.println(String.format("Failed to create folder \"%s\". Folder already exists.", newFolder));
     }
 
-    /** 
-     * Run the main functionality of a FolderCreator instance.
-    */
-    public void run() {
-        this.setUserFilePath();
+    private void exitProgram() {
+        System.out.println(EXIT);
+        System.exit(0);
+    }
 
+    public void run() {
+        this.filePath = PathFinder.getDefault();
         List<String> options = Arrays.asList(Prompts.OPTION_A,
                                              Prompts.OPTION_B,
                                              Prompts.OPTION_C,
-                                             Prompts.OPTION_D);
+                                             Prompts.OPTION_D,
+                                             Prompts.OPTION_E);
         Boolean exitProgram = false;
         while (!exitProgram) {
-            String userInput = Asker.askOption(Prompts.folderOptionsPrompt(), options);
-            if (userInput.equals(Prompts.OPTION_A)) this.createFolderInFolder();
+            String userInput = Asker.askOption(Prompts.folderOptionsPrompt(this.filePath), options).toUpperCase();
+            if (userInput.equals(Prompts.OPTION_A)) this.createMassFolders();
             else if (userInput.equals(Prompts.OPTION_B)) this.createWeekFolders();
-            else if (userInput.equals(Prompts.OPTION_C)) this.setUserFilePath();
+            else if (userInput.equals(Prompts.OPTION_C)) this.setFilePath();
+            else if (userInput.equals(Prompts.OPTION_D)) this.createFolderInFolder();
             else exitProgram = true;
         }
         this.exitProgram();
-    }
-
-    /** 
-     * Notify the user that the program is exiting and then exit.
-    */
-    private void exitProgram() {
-        System.out.println("Exiting...");
-        System.exit(0);
     }
 
     public static void main(String[] args) {

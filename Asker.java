@@ -1,26 +1,41 @@
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Asker {
 
-    private static final Scanner SCANNER = new Scanner(System.in); // Reads the user's inputs
+    private static final Scanner SCANNER = new Scanner(System.in);
+    static final String YEARQ = "What year? Eg. \'1st year\', \'2nd year\', etc.";
+    static final String COURSEQ = "What course? Eg. \'CSC207\', \'MAT102\', etc.";
+    static final String FILEPATHQ = "Enter the filepath for where your folders should be created:";
+    static final String NEWFOLDERQ = "What is this new folder\'s name?";
+    static final String NUMBERFOLDERQ = "Number these folders? (eg. Lab 1, Lab 2, etc.)";
+    static final String PICKFOLDERQ = "Which folder do you want to create your folders in?";
+    static final String FOLDERTOTALQ = "How many folders? The amount must be at least 1.";
 
-    /**
-     * Ask the user for a string input and, if an invalid string is inputted, 
-     * keep asking them for a valid string
-     * @param msg the message displayed to the user to pick an option
-     * @param options the valid options the user can choose from
-     * @return the user's valid string input
-     */
     private static String decisionString(String msg, List<String> options) {
         Boolean chosen = false;
         String userInput = "";
         while (!chosen) {
             try {
-                userInput = SCANNER.nextLine().toUpperCase();
-                if (!options.contains(userInput)) {
+                userInput = SCANNER.nextLine();
+                if (!options.contains(userInput.toUpperCase())) {
+                    throw new InvalidOptionException();
+                }
+                else chosen = true;
+            }
+            catch (InvalidOptionException e) {System.out.println(msg);}
+        }
+        return userInput;
+    }
+
+    private static String decisionNotString(String msg, List<String> options) {
+        Boolean chosen = false;
+        String userInput = "";
+        while (!chosen) {
+            try {
+                userInput = SCANNER.nextLine();
+                if (options.contains(userInput.toUpperCase())) {
                     throw new InvalidOptionException();
                 }
                 else chosen = true;
@@ -54,14 +69,11 @@ public class Asker {
         return chosenAmount;
     }
 
-    /**
-     * Ask the user a yes or no question and keep asking them for one of those options
-     * @param msg the message displayed to the user to pick yes or no
-     * @return a chosen yes or no from the user
-     */
-    private static final String yesNo(String msg) {
+    public static final String askYesNo(String msg) {
         List<String> options = Arrays.asList(Prompts.YES, Prompts.NO);
-        return Asker.decisionString(msg, options);
+        String displayMsg = msg + "\n" + Prompts.yesNoPrompt();
+        System.out.println(displayMsg);
+        return Asker.decisionString(displayMsg, options);
     }
 
     /**
@@ -74,34 +86,28 @@ public class Asker {
         return SCANNER.nextLine();
     }
 
-    /**
-     * Ask the user for a valid integer
-     * @param msg the message displayed for the user to input an integer
-     * @param min the minimum valid integer the user can input
-     * @param max the maximum valid integer the user can input
-     * @return the user's inputted valid integer
-     */
-    public static Integer askValidInteger(String msg, Integer min, Integer max) {
+    public static String askNotString(String msg, List<String> notOptions) {
+        System.out.println(msg);
+        return decisionNotString(msg, notOptions);
+    }
+
+    public static Integer askInteger(String msg, Integer min, Integer max) {
         System.out.println(msg);
         return decisionNumber(msg, min, max);
     }
 
-    /**
-     * Ask the user for a valid file path and, if an invalid path is given, keep
-     * asking the user for a valid one
-     * @return the user's inputted valid file path
-     */
-    public static String askFilePath() {
-        String startFilePathQ = "Enter the filepath for where your folders should be created:";
+    public static String askFilePath(String msg) {
         Boolean chosen = false;
         String userInput = "";
 
         while (!chosen) {
             try {
-                userInput = askString(startFilePathQ);
-                if (!(new File(userInput).exists())) {
-                    throw new InvalidOptionException();
+                userInput = askString(msg);
+                if (userInput == "") {
+                    userInput = PathFinder.getDefault();
+                    chosen = true;
                 }
+                else if (!FolderChecker.isValidPath(userInput)) throw new InvalidOptionException();
                 else chosen = true;
             }
             catch (InvalidOptionException e) {
@@ -111,23 +117,29 @@ public class Asker {
         return userInput;
     }
 
-    /**
-     * Ask the user if they wish to continue or not
-     * @param msg the message displayed that asks the user if they want to continue
-     * @return a chosen yes or no from the user
-     */
-    public static final String askContinue(String msg) {
-        String continueMsg = msg + "\n" + Prompts.continuePrompt();
-        System.out.println(continueMsg);
-        return yesNo(continueMsg);
+    public static String askFilePath(String msg, String filePath) {
+        Boolean chosen = false;
+        String userInput = "";
+
+        while (!chosen) {
+            try {
+                userInput = askString(msg);
+                if (!FolderChecker.isValidPath(filePath + "\\" + userInput)) {
+                    throw new InvalidOptionException();
+                }
+                else chosen = true;
+            }
+            catch (InvalidOptionException e) {
+                System.out.println("Invalid file path. Please try again.");
+            }
+        }
+        return filePath + "\\" + userInput;
     }
 
-    /**
-     * Ask the user to pick an option
-     * @param msg the message displayed that asks the user to pick an option
-     * @param options the possible options the user can choose from
-     * @return a valid option the user has picked
-     */
+    public static final String askContinue(String msg) {
+        return askYesNo(msg + "\n" + "Continue?");
+    }
+
     public static final String askOption(String msg, List<String> options) {
         System.out.println(msg);
         return decisionString(msg, options);
@@ -140,18 +152,19 @@ public class Asker {
      * @return a yes or no from the user
      */
     public static final String askWeekFolderConfirm(String filePath, Integer weekTotal) {
-        String yesNoMsg = String.format("Creating %d Week folders in %s.", weekTotal, filePath);
+        String yesNoMsg = String.format("Creating %d folders at:\n%s.", weekTotal, filePath);
         return Asker.askContinue(yesNoMsg);
     }
 
-    /**
-     * Ask the user if they want to create a specific folder in a particular folder
-     * @param newFolder the folder to be created
-     * @param folder the folder where the new folder will be created
-     * @return a yes or no from the user
-     */
-    public static final String askFolderConfirm(String newFolder, String folder) {
-        String yesNoMsg = String.format("Creating \"%s\" in %s.", newFolder, folder);
+    public static final String askFolderInConfirm(String newFolder, String folder) {
+        String yesNoMsg = String.format("Creating \"%s\" in:\n%s.", newFolder, folder);
         return Asker.askContinue(yesNoMsg);
     }
+
+    public static final String askFoldersConfirm(String folderNme, String filePath, Integer folderTotal) {
+        String yesNoMsg = String.format("Creating %d \"%s\" folders at:\n%s", folderTotal, folderNme,
+                                                                                 filePath);
+        return Asker.askContinue(yesNoMsg);
+    }
+
 }
