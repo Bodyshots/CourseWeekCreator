@@ -8,6 +8,5 @@ Basically, the program creates x number of "Week" folders, given an inputted fil
 Run FolderCreator.java and enter the program's required inputs.
 
 ## To Do
-- Documentation
 - General refactoring
 - .exe file
