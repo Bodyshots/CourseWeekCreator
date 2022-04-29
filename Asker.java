@@ -5,6 +5,13 @@ import java.util.Scanner;
 public class Asker {
 
     private static final Scanner SCANNER = new Scanner(System.in);
+    static final String YEARQ = "What year? Eg. \'1st year\', \'2nd year\', etc.";
+    static final String COURSEQ = "What course? Eg. \'CSC207\', \'MAT102\', etc.";
+    static final String FILEPATHQ = "Enter the filepath for where your folders should be created:";
+    static final String NEWFOLDERQ = "What is this new folder\'s name?";
+    static final String NUMBERFOLDERQ = "Number these folders? (eg. Lab 1, Lab 2, etc.)";
+    static final String PICKFOLDERQ = "Which folder do you want to create your folders in?";
+    static final String FOLDERTOTALQ = "How many folders? The amount must be at least 1.";
 
     private static String decisionString(String msg, List<String> options) {
         Boolean chosen = false;

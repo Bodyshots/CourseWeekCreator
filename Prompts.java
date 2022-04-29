@@ -71,7 +71,9 @@ public class Prompts {
             outputStr += String.format("[%s] - %s\n", options.get(i), descripts.get(i));
             // if (i != optionsSize - 1) outputStr += "\n";
         }
-        options.add(Character.toString(options.get(options.size() - 1).charAt(0) + 1));
+        if (optionsSize == 0) options.add(Prompts.OPTION_A);
+        else options.add(Character.toString(options.get(options.size() - 1).charAt(0) + 1));
+
         outputStr += String.format("[%s] - Back", options.get(options.size() - 1)); 
         return outputStr;
     }

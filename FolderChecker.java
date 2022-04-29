@@ -21,6 +21,17 @@ public class FolderChecker {
         return new File(filePath).isDirectory();
     }
 
+    public static final List<String> listFolders(String filePath) {
+        String [] files = FolderChecker.listFolderFiles(filePath);
+        List<String> folders = new ArrayList<>();
+        for (String file: files) {
+            if (FolderChecker.isFolder(String.format("%s\\%s", filePath, file))) {
+                folders.add(file);
+            }
+        }
+        return folders;
+    }
+
     public static final boolean isPopFolder(String filePath) {
         if (!FolderChecker.isFolder(filePath)) {
             System.out.println("This file isn\'t a folder!");
