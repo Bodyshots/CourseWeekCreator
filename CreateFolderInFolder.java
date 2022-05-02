@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CreateFolderInFolder implements FolderBehaviour {
+    static final int OFFSET = 65; 
 
     @Override
     public void doCreate(String filePath) {
@@ -48,16 +49,77 @@ public class CreateFolderInFolder implements FolderBehaviour {
                     }
                     else return; // no on "continue"
                 }
-                else if (userInput.equals(Prompts.OPTION_B)) {
+                else if (userInput.equals(Prompts.OPTION_B)) { // Z => Back, "In a specific folder"
                     List<String> folders = FolderChecker.listFolders(filePath);
                     options = new ArrayList<>();
-                    for (int i = 0; i < folders.size(); i++) {
-                        options.add(Character.toString((Prompts.OPTION_A.charAt(0) + i)));
-                    }
+                    int maxOption = Prompts.OPTION_Z.charAt(0) - Prompts.OPTION_A.charAt(0);
+                    
+                    int foldIndex = 0;
+                    int foldSize = folders.size();
+                    userInput = "";
+                    int times = 0;
+                    List<String> descripts = new ArrayList<>();
+                    int offset = 0;
+                    
+                    while (userInput == "") {
+                        if (options.size() > maxOption - 1 || foldIndex > maxOption && foldIndex == foldSize) { // for contents larger than A-Z
+                            int leftoff = 0;
+                            boolean nextPg = false, backPg = false;
+                            for (int i = 0; i < options.size() + offset; i++) {
+                                if ((foldSize - foldIndex - 1) > 0 && i > options.size() - 2) {
+                                    descripts.add("Next Page");
+                                    nextPg = true;
+                                    if (leftoff == 0) leftoff = i + (foldIndex / maxOption - 1) * maxOption;
+                                }
+                                if ((foldIndex / (maxOption + 1)) > 0 && ((i > options.size() - 2 && nextPg) || i == options.size() - 1))  {
+                                    descripts.add("Back Page");
+                                    backPg = true;
+                                    if (leftoff == 0) leftoff = i + (foldIndex / maxOption - 1) * maxOption;
+                                }
+                                if (leftoff == 0) descripts.add(folders.get(i + times * maxOption));
+                            }
+                            while (offset != 0) {
+                                options.add(Character.toString(options.get(options.size() - 1).charAt(0) + 1));
+                                offset --;
+                            }
 
-                    System.out.println(Asker.PICKFOLDERQ);
-                    userInput = Asker.askOption(Prompts.infOptions(options, folders), options).toUpperCase();
-                    if (userInput.equals(options.get(options.size() - 1))) return; // back
+                            System.out.println(Asker.PICKFOLDERQ);
+                            userInput = Asker.askOption(Prompts.infOptions(options, descripts), options).toUpperCase();
+                            times ++;
+
+                            if (foldSize > maxOption && backPg) // back pg option selected
+                            {
+                                // third-last opt if w/ nextPg, second-last opt if not 
+                                if (userInput.equals(options.get(options.size() - 2))) {
+                                        foldIndex = foldIndex - maxOption - descripts.size() + 2;
+                                        userInput = "";
+                                        options = new ArrayList<>();
+                                        descripts = new ArrayList<>();
+                                        times -= 2;
+                                }
+                            }
+                            else if ((foldSize - foldIndex) > 0 && nextPg) { // next pg selected
+                                if ((backPg && userInput.equals(options.get(options.size() - 3))) ||
+                                     userInput.equals(options.get(options.size() - 2))) {
+                                        userInput = "";
+                                        options = new ArrayList<>();
+                                        descripts = new ArrayList<>();
+                                }
+                            }
+                            else if (userInput.equals(options.get(options.size() - 1))) return; // back button (not back pg)
+                            while (leftoff != foldIndex && Math.abs(foldIndex - leftoff) < 3) {
+                                descripts.add(folders.get(leftoff));
+                                if (foldIndex - leftoff == 2) options.add(Prompts.OPTION_B);
+                                else options.add(Prompts.OPTION_A);
+                                leftoff ++;
+                                offset ++;
+                            }
+                        }
+                        else {
+                            options.add(Character.toString(((foldIndex + offset) % maxOption) + OFFSET));
+                            foldIndex ++;
+                        }
+                    }
 
                     String chosenFolder = folders.get(options.indexOf(userInput));
 

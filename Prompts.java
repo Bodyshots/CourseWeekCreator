@@ -8,6 +8,7 @@ public class Prompts {
     static final String OPTION_C = "C";
     static final String OPTION_D = "D";
     static final String OPTION_E = "E";
+    static final String OPTION_Z = "Z"; // last option
 
     public static final String yesNoPrompt() {
         return String.format("[%s] - Yes\n" +
@@ -58,7 +59,7 @@ public class Prompts {
     }
 
     /**
-     * Prereq: <options> and <descripts> have to be parallel arrays
+     * Prereq: <options> and <descripts> have to be parallel lists
      * 
      * @param options Valid buttons that the user can enter
      * @param descripts Descriptions of each button
@@ -69,12 +70,29 @@ public class Prompts {
         int optionsSize = options.size();
         for (int i = 0; i < optionsSize; i++) {
             outputStr += String.format("[%s] - %s\n", options.get(i), descripts.get(i));
-            // if (i != optionsSize - 1) outputStr += "\n";
         }
-        if (optionsSize == 0) options.add(Prompts.OPTION_A);
-        else options.add(Character.toString(options.get(options.size() - 1).charAt(0) + 1));
+        // for back button
+        if (optionsSize == 0) options.add(Prompts.OPTION_A); 
+        else options.add(Character.toString(options.get(optionsSize - 1).charAt(0) + 1));
 
-        outputStr += String.format("[%s] - Back", options.get(options.size() - 1)); 
+        outputStr += String.format("[%s] - Back", options.get(options.size() - 1)); // not back pg, just back
+        return outputStr;
+    }
+    /**
+     * Prereq: <options> and <descripts> have to be parallel arrays
+     * 
+     * @param options Valid buttons that the user can enter
+     * @param descripts Descriptions of each button
+     * @return A prompt listing a series of buttons with their respective descriptions
+     */
+    public static final String infOptions(String [] options, String [] descripts) {
+        String outputStr = "";
+        int optionsSize = options.length;
+        for (int i = 0; i < optionsSize; i++) {
+            outputStr += String.format("[%s] - %s\n", options[i], descripts[i]);
+        }
+
+        outputStr += String.format("[%s] - Back", Character.toString(options[options.length - 1].charAt(0) + 1)); // not back pg
         return outputStr;
     }
 }
