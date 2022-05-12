@@ -63,7 +63,8 @@ public class CreateFolderInFolder implements FolderBehaviour {
                     
                     while (userInput == "") { // adds options
                         // adds descripts
-                        if (options.size() > maxOption - 3 || foldIndex > maxOption && foldIndex == foldSize) { // for contents larger than A-Z
+                        if (foldIndex == foldSize || options.size() > maxOption - 3 || 
+                           (foldIndex > maxOption && foldIndex == foldSize)) { // for contents larger than A-Z
                             boolean nextPg = false, backPg = false;
                             for (int i = 0; i < options.size(); i++) descripts.add(folders.get(i + times * maxOption - offset));
 
@@ -78,7 +79,7 @@ public class CreateFolderInFolder implements FolderBehaviour {
                             int option = 0;
                             boolean doneNext = false, doneBack = false;
                             while (option < 2) {
-                                if (!nextPg && !backPg || (option == 0 && !(backPg && nextPg) && foldIndex < foldSize)) {
+                                if (foldIndex < foldSize && (!nextPg && !backPg || (option == 0 && !(backPg && nextPg)))) {
                                     descripts.add(folders.get(foldIndex));
                                     foldIndex ++;
                                 }
@@ -151,8 +152,8 @@ public class CreateFolderInFolder implements FolderBehaviour {
                                 }
                                 if (offset < 0) offset = 0;
                             }
-                            else if ((foldSize - foldIndex) > 0 && nextPg && (backPg && userInput.equals(options.get(options.size() - 3))) ||
-                                      userInput.equals(options.get(options.size() - 2))) { // next pg selected
+                            else if (nextPg && ((foldSize - foldIndex) > 0 && (backPg && userInput.equals(options.get(options.size() - 3))) ||
+                                      userInput.equals(options.get(options.size() - 2)))) { // next pg selected
                                 userInput = "";
                                 options = new ArrayList<>();
                                 descripts = new ArrayList<>();
@@ -168,7 +169,9 @@ public class CreateFolderInFolder implements FolderBehaviour {
                     }
                     
                     if (times != 0) times --;
-                    String chosenFolder = folders.get(times * maxOption + options.indexOf(userInput) - 1);
+                    String chosenFolder;
+                    if (times == 0) chosenFolder = folders.get(times * maxOption + options.indexOf(userInput));
+                    else chosenFolder = folders.get(times * maxOption + options.indexOf(userInput) - 1);
 
                     Integer folderNum = Asker.askFolderNum();
                     userInput = Asker.askFolderInConfirm(folderNme, chosenFolder).toUpperCase();
