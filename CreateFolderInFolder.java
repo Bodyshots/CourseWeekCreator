@@ -61,67 +61,114 @@ public class CreateFolderInFolder implements FolderBehaviour {
                     List<String> descripts = new ArrayList<>();
                     int offset = 0;
                     
-                    while (userInput == "") {
-                        if (options.size() > maxOption - 1 || foldIndex > maxOption && foldIndex == foldSize) { // for contents larger than A-Z
-                            int leftoff = 0;
+                    while (userInput == "") { // adds options
+                        // adds descripts
+                        if (options.size() > maxOption - 3 || foldIndex > maxOption && foldIndex == foldSize) { // for contents larger than A-Z
                             boolean nextPg = false, backPg = false;
-                            for (int i = 0; i < options.size() + offset; i++) {
-                                if ((foldSize - foldIndex - 1) > 0 && i > options.size() - 2) {
+                            for (int i = 0; i < options.size(); i++) descripts.add(folders.get(i + times * maxOption - offset));
+
+                            int result = checkIfPg(foldIndex, foldSize, maxOption, options, nextPg, backPg);
+                            if (result == 2) {
+                                backPg = true;
+                                result = checkIfPg(foldIndex, foldSize, maxOption, options, nextPg, backPg);
+                                if (result == 1) nextPg = true;
+                            }
+                            else if (result == 1) nextPg = true;
+
+                            int option = 0;
+                            boolean doneNext = false, doneBack = false;
+                            while (option < 2) {
+                                if (!nextPg && !backPg || (option == 0 && !(backPg && nextPg) && foldIndex < foldSize)) {
+                                    descripts.add(folders.get(foldIndex));
+                                    foldIndex ++;
+                                }
+                                else if (!doneNext && nextPg) {
                                     descripts.add("Next Page");
-                                    nextPg = true;
-                                    if (leftoff == 0) leftoff = i + (foldIndex / maxOption - 1) * maxOption;
+                                    doneNext = true;
                                 }
-                                if ((foldIndex / (maxOption + 1)) > 0 && ((i > options.size() - 2 && nextPg) || i == options.size() - 1))  {
+                                else if (!doneBack && backPg) {
                                     descripts.add("Back Page");
-                                    backPg = true;
-                                    if (leftoff == 0) leftoff = i + (foldIndex / maxOption - 1) * maxOption;
+                                    doneBack = true;
                                 }
-                                if (leftoff == 0) descripts.add(folders.get(i + times * maxOption));
-                            }
-                            while (offset != 0) {
+                                else break;
                                 options.add(Character.toString(options.get(options.size() - 1).charAt(0) + 1));
-                                offset --;
+                                option ++;
                             }
+
+                                // int result = checkIfPg(foldIndex, foldSize, maxOption, i, options, nextPg, backPg);
+
+                                
+                                // if (result == 1) {
+                                //     descripts.add("Next Page");
+                                //     nextPg = true;
+                                //     if (leftoff == 0) leftoff = i + (foldIndex / maxOption - 1) * maxOption;
+                                // }
+                                // else if (result == 2) {
+                                //     descripts.add("Back Page");
+                                //     backPg = true;
+                                //     if (leftoff == 0) leftoff = i + (foldIndex / maxOption - 1) * maxOption;
+                                // }
+                                // else {
+                                //     if (leftoff == 0) descripts.add(folders.get(i + times * maxOption));
+                                //     else {
+                                //         foldIndex ++;
+                                //         options.add(Character.toString(options.get(options.size() - 1).charAt(0) + 1));
+                                //     }
+                                // }
+                            // while (offset != 0) {
+                            //     options.add(Character.toString(options.get(options.size() - 1).charAt(0) + 1));
+                            //     offset --;
+                            // }
 
                             System.out.println(Asker.PICKFOLDERQ);
                             userInput = Asker.askOption(Prompts.infOptions(options, descripts), options).toUpperCase();
                             times ++;
 
-                            if (foldSize > maxOption && backPg) // back pg option selected
+                            if (foldSize > maxOption && backPg && 
+                                userInput.equals(options.get(options.size() - 2))) // back pg option selected
                             {
                                 // third-last opt if w/ nextPg, second-last opt if not 
-                                if (userInput.equals(options.get(options.size() - 2))) {
-                                        foldIndex = foldIndex - maxOption - descripts.size() + 2;
-                                        userInput = "";
-                                        options = new ArrayList<>();
-                                        descripts = new ArrayList<>();
-                                        times -= 2;
+                                foldIndex = foldIndex - maxOption - descripts.size() + 3;
+                                userInput = "";
+                                options = new ArrayList<>();
+                                descripts = new ArrayList<>();
+                                times -= 2;
+                                nextPg = false; backPg = false;
+                                result = checkIfPg(foldIndex + times * maxOption, 
+                                                   foldSize, maxOption, options, nextPg, backPg);
+                                if (result == 2) {
+                                    backPg = true;
+                                    offset --;
+                                    result = checkIfPg(foldIndex, foldSize, maxOption, options, nextPg, backPg);
+                                    if (result == 1) {
+                                        nextPg = true;
+                                        offset --;
+                                    }
                                 }
+                                else if (result == 1) {
+                                    nextPg = true;
+                                    offset --;
+                                }
+                                if (offset < 0) offset = 0;
                             }
-                            else if ((foldSize - foldIndex) > 0 && nextPg) { // next pg selected
-                                if ((backPg && userInput.equals(options.get(options.size() - 3))) ||
-                                     userInput.equals(options.get(options.size() - 2))) {
-                                        userInput = "";
-                                        options = new ArrayList<>();
-                                        descripts = new ArrayList<>();
-                                }
+                            else if ((foldSize - foldIndex) > 0 && nextPg && (backPg && userInput.equals(options.get(options.size() - 3))) ||
+                                      userInput.equals(options.get(options.size() - 2))) { // next pg selected
+                                userInput = "";
+                                options = new ArrayList<>();
+                                descripts = new ArrayList<>();
+                                if (doneBack) offset ++;
+                                if (doneNext) offset ++;
                             }
                             else if (userInput.equals(options.get(options.size() - 1))) return; // back button (not back pg)
-                            while (leftoff != foldIndex && Math.abs(foldIndex - leftoff) < 3) {
-                                descripts.add(folders.get(leftoff));
-                                if (foldIndex - leftoff == 2) options.add(Prompts.OPTION_B);
-                                else options.add(Prompts.OPTION_A);
-                                leftoff ++;
-                                offset ++;
-                            }
                         }
                         else {
                             options.add(Character.toString(((foldIndex + offset) % maxOption) + OFFSET));
                             foldIndex ++;
                         }
                     }
-
-                    String chosenFolder = folders.get(options.indexOf(userInput));
+                    
+                    if (times != 0) times --;
+                    String chosenFolder = folders.get(times * maxOption + options.indexOf(userInput) - 1);
 
                     Integer folderNum = Asker.askFolderNum();
                     userInput = Asker.askFolderInConfirm(folderNme, chosenFolder).toUpperCase();
@@ -162,5 +209,16 @@ public class CreateFolderInFolder implements FolderBehaviour {
                 FolderCreator.createFolder(folderNme, filePath + folders.get(i));
             }
         }
+    }
+
+    private final int checkIfPg(int foldIndex, int foldSize, int maxOption, 
+                                List<String> options, boolean nextPg, boolean backPg) {
+        if (!backPg && (foldIndex / (maxOption + 1)) > 0) { // back pg
+            return 2;
+        }
+        else if ((foldSize - foldIndex - 1) > 0) {
+            return 1;
+        }
+        return 0;
     }
 }
