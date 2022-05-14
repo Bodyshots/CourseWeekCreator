@@ -4,6 +4,8 @@ import java.util.Scanner;
 
 public class Asker {
 
+
+    private static final Integer MINFOLDERS = 1;
     private static final Scanner SCANNER = new Scanner(System.in);
     static final String YEARQ = "What year? Eg. \'1st year\', \'2nd year\', etc.";
     static final String COURSEQ = "What course? Eg. \'CSC207\', \'MAT102\', etc.";
@@ -165,6 +167,10 @@ public class Asker {
         String yesNoMsg = String.format("Creating %d \"%s\" folders at:\n%s", folderTotal, folderNme,
                                                                                  filePath);
         return Asker.askContinue(yesNoMsg);
+    }
+
+    public static final Integer askFolderNum() {
+        return Asker.askInteger(Asker.FOLDERTOTALQ, MINFOLDERS, Integer.MAX_VALUE);
     }
 
 }
