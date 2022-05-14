@@ -2,11 +2,6 @@ package src;
 import java.util.Arrays;
 import java.util.List;
 
-import src.FolderBehaviours.CreateFolderInFolder;
-import src.FolderBehaviours.CreateMass;
-import src.FolderBehaviours.CreateNull;
-import src.FolderBehaviours.CreateWeeks;
-
 public class Main {
     private static final String EXIT = "Exiting...";
     
@@ -17,23 +12,22 @@ public class Main {
 
     public static void run() {
         FolderCreator folderCreator = new FolderCreator();
-        folderCreator.setFilePath();
+        MainOptionFactory optFact = new MainOptionFactory();
         List<String> options = Arrays.asList(Prompts.OPTION_A,
                                              Prompts.OPTION_B,
                                              Prompts.OPTION_C,
                                              Prompts.OPTION_D,
                                              Prompts.OPTION_E);
         Boolean exitProgram = false;
+
+        folderCreator.setFilePath();
         while (!exitProgram) {
             String userInput = Asker.askOption(Prompts.folderOptionsPrompt(folderCreator.getFilePath()), options).toUpperCase();
-            if (userInput.equals(Prompts.OPTION_A)) folderCreator.setFBehaviour(new CreateMass());
-            else if (userInput.equals(Prompts.OPTION_B)) folderCreator.setFBehaviour(new CreateWeeks());
-            else if (userInput.equals(Prompts.OPTION_C)) {
-                folderCreator.setFBehaviour(new CreateNull());
-                folderCreator.setFilePath();
-            }
-            else if (userInput.equals(Prompts.OPTION_D)) folderCreator.setFBehaviour(new CreateFolderInFolder());
-            else exitProgram = true;
+            folderCreator.setFBehaviour(optFact.createBehaviour(userInput));
+
+            if (userInput.equals(Prompts.OPTION_C)) folderCreator.setFilePath();
+            if (userInput.equals(Prompts.OPTION_E)) exitProgram = true;
+
             if (!exitProgram) folderCreator.create();
         }
         Main.exitProgram();

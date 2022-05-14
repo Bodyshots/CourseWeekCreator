@@ -1,11 +1,12 @@
 package src;
 import java.io.File;
 
+import src.FolderBehaviours.CreateNull;
 import src.FolderBehaviours.FolderBehaviour;
 
 public class FolderCreator {
     private static final Integer MINFOLDERS = 1;
-    private FolderBehaviour fBehaviour;
+    private FolderBehaviour fBehaviour = new CreateNull();
 
     private String filePath;
 
