@@ -58,7 +58,7 @@ public class CreateFolderInFolder implements FolderBehaviour {
         }
     }
 
-    private final int checkIfPg(int foldIndex, int foldSize, List<String> options, 
+    private final int checkIfPg(int foldIndex, int foldSize, 
                                 boolean nextPg, boolean backPg) {
         if (!backPg && (foldIndex / (MAXOPTION + 1)) > 0) return 2; // back pg
         else if ((foldSize - foldIndex - 1) > 0) return 1; // next pg
@@ -181,6 +181,32 @@ public class CreateFolderInFolder implements FolderBehaviour {
         else return false; // no on "continue"
     }
 
+    private final boolean nextPgSelect(boolean nextPg, boolean backPg, int foldSize,
+                                       int foldIndex, String userInput, List<String> options) {
+        return (nextPg && ((foldSize - foldIndex) > 0 && (backPg && userInput.equals(options.get(options.size() - 3))) ||
+                userInput.equals(options.get(options.size() - 2))));
+    }
+
+    private final boolean backPgSelect(boolean backPg, int foldSize, String userInput, List<String> options) {
+        return backPg && foldSize > MAXOPTION && userInput.equals(options.get(options.size() - 2));
+    }
+
+    private final int oldFoldIndex(int descriptsSize, int foldIndex, int foldSize) {
+        if (descriptsSize == 25) foldIndex = foldIndex - MAXOPTION - descriptsSize + 1;
+        else foldIndex = foldIndex - MAXOPTION - descriptsSize; // +1 for back button
+        boolean nextPg = false, backPg = false;
+        if (checkIfPg(foldIndex + MAXOPTION, foldSize, nextPg, backPg) == 2) {
+            backPg = true;
+            foldIndex ++; // +1 for back pg
+        }
+        if (checkIfPg(foldIndex + MAXOPTION, foldSize, nextPg, backPg) == 1) {
+            nextPg = true;
+            foldIndex ++; // +1 for next pg
+        }
+        foldIndex ++;
+        return foldIndex;
+    }
+
     private final boolean handleA(String folderNme, String filePath) {
         List<List<String>> folderCats = FolderChecker.listFolderCats(filePath);
         List<String> options = new ArrayList<>();
@@ -194,10 +220,10 @@ public class CreateFolderInFolder implements FolderBehaviour {
                 boolean nextPg = false, backPg = false;
                 List<String> descripts = getDescriptCats(options.size(), times, offset, folderCats);
 
-                int result = checkIfPg(foldIndex, foldSize, options, nextPg, backPg);
+                int result = checkIfPg(foldIndex, foldSize, nextPg, backPg);
                 if (result == 2) {
                     backPg = true;
-                    if (checkIfPg(foldIndex, foldSize, options, nextPg, backPg) == 1) nextPg = true;
+                    if (checkIfPg(foldIndex, foldSize, nextPg, backPg) == 1) nextPg = true;
                 }
                 else if (result == 1) nextPg = true;
 
@@ -214,11 +240,11 @@ public class CreateFolderInFolder implements FolderBehaviour {
                     times -= 2;
                     nextPg = false; backPg = false;
                     result = checkIfPg(foldIndex + times * MAXOPTION, 
-                                        foldSize, options, nextPg, backPg);
+                                        foldSize, nextPg, backPg);
                     if (result == 2) {
                         backPg = true;
                         offset --;
-                        if (checkIfPg(foldIndex, foldSize, options, nextPg, backPg) == 1) {
+                        if (checkIfPg(foldIndex, foldSize, nextPg, backPg) == 1) {
                             nextPg = true;
                             offset --;
                         }
@@ -268,10 +294,10 @@ public class CreateFolderInFolder implements FolderBehaviour {
                 boolean nextPg = false, backPg = false;
                 List<String> descripts = getDescripts(options.size(), times, offset, folders);
 
-                int result = checkIfPg(foldIndex, foldSize, options, nextPg, backPg);
+                int result = checkIfPg(foldIndex, foldSize, nextPg, backPg);
                 if (result == 2) {
                     backPg = true;
-                    if (checkIfPg(foldIndex, foldSize, options, nextPg, backPg) == 1) nextPg = true;
+                    if (checkIfPg(foldIndex, foldSize, nextPg, backPg) == 1) nextPg = true;
                 }
                 else if (result == 1) nextPg = true;
 
@@ -281,42 +307,21 @@ public class CreateFolderInFolder implements FolderBehaviour {
                 userInput = Asker.askOption(Prompts.infOptions(options, descripts), options).toUpperCase();
                 times ++;
 
-                if (foldSize > MAXOPTION && backPg && 
-                    userInput.equals(options.get(options.size() - 2))) { // back pg option selected
-                    // third-last opt if w/ nextPg, second-last opt if not 
-                    foldIndex = foldIndex - MAXOPTION - descripts.size() + 3;
-                    times -= 2;
-                    nextPg = false; backPg = false;
-                    result = checkIfPg(foldIndex + times * MAXOPTION, 
-                                        foldSize, options, nextPg, backPg);
-                    if (result == 2) {
-                        backPg = true;
-                        offset --;
-                        if (checkIfPg(foldIndex, foldSize, options, nextPg, backPg) == 1) {
-                            nextPg = true;
-                            offset --;
+                if (!(userInput.equals(options.get(options.size() - 1)))) { // if not back button
+                    if (nextPgSelect(nextPg, backPg, foldSize, foldIndex, userInput, options) || 
+                        backPgSelect(backPg, foldSize, userInput, options)) {
+                            if (backPgSelect(backPg, foldSize, userInput, options)) {
+                                foldIndex = oldFoldIndex(descripts.size(), foldIndex, foldSize);
+                                times -= 2;
+                            }
+                            userInput = "";
+                            options = new ArrayList<>();
+                            descripts = new ArrayList<>();
+                            if (foldIndex != 0) offset = (MAXOPTION * times) % foldIndex;
+                            else offset = 0;
                         }
-                    }
-                    else if (result == 1) {
-                        nextPg = true;
-                        offset --;
-                    }
-
-                    if (offset < 0) offset = 0;
-                    userInput = "";
-                    options = new ArrayList<>();
-                    descripts = new ArrayList<>();
                 }
-                else if (nextPg && ((foldSize - foldIndex) > 0 && (backPg && userInput.equals(options.get(options.size() - 3))) ||
-                         userInput.equals(options.get(options.size() - 2)))) { // next pg selected
-
-                    userInput = "";
-                    options = new ArrayList<>();
-                    descripts = new ArrayList<>();
-                    if (backPg) offset ++;
-                    if (nextPg) offset ++;
-                }
-                else if (userInput.equals(options.get(options.size() - 1))) return false; // back button (not back pg)
+                else return false; // back button (not back pg)
             }
             else {
                 options.add(Character.toString(((foldIndex + offset) % MAXOPTION) + OFFSET));
