@@ -233,42 +233,21 @@ public class CreateFolderInFolder implements FolderBehaviour {
                 userInput = Asker.askOption(Prompts.infOptions(options, descripts), options).toUpperCase();
                 times ++;
 
-                if (foldSize > MAXOPTION && backPg && 
-                    userInput.equals(options.get(options.size() - 2))) { // back pg option selected
-                    // third-last opt if w/ nextPg, second-last opt if not 
-                    foldIndex = foldIndex - MAXOPTION - descripts.size() + 3;
-                    times -= 2;
-                    nextPg = false; backPg = false;
-                    result = checkIfPg(foldIndex + times * MAXOPTION, 
-                                        foldSize, nextPg, backPg);
-                    if (result == 2) {
-                        backPg = true;
-                        offset --;
-                        if (checkIfPg(foldIndex, foldSize, nextPg, backPg) == 1) {
-                            nextPg = true;
-                            offset --;
+                if (!(userInput.equals(options.get(options.size() - 1)))) { // if not back button
+                    if (nextPgSelect(nextPg, backPg, foldSize, foldIndex, userInput, options) || 
+                        backPgSelect(backPg, foldSize, userInput, options)) {
+                            if (backPgSelect(backPg, foldSize, userInput, options)) {
+                                foldIndex = oldFoldIndex(descripts.size(), foldIndex, foldSize);
+                                times -= 2;
+                            }
+                            userInput = "";
+                            options = new ArrayList<>();
+                            descripts = new ArrayList<>();
+                            if (foldIndex != 0) offset = (MAXOPTION * times) % foldIndex;
+                            else offset = 0;
                         }
-                    }
-                    else if (result == 1) {
-                        nextPg = true;
-                        offset --;
-                    }
-
-                    if (offset < 0) offset = 0;
-                    userInput = "";
-                    options = new ArrayList<>();
-                    descripts = new ArrayList<>();
                 }
-                else if (nextPg && ((foldSize - foldIndex) > 0 && (backPg && userInput.equals(options.get(options.size() - 3))) ||
-                         userInput.equals(options.get(options.size() - 2)))) { // next pg selected
-
-                    userInput = "";
-                    options = new ArrayList<>();
-                    descripts = new ArrayList<>();
-                    if (backPg) offset ++;
-                    if (nextPg) offset ++;
-                }
-                else if (userInput.equals(options.get(options.size() - 1))) return false; // back button (not back pg)
+                else return false; // back button (not back pg)
             }
             else {
                 options.add(Character.toString(((foldIndex + offset) % MAXOPTION) + OFFSET));
