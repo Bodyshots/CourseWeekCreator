@@ -5,11 +5,8 @@ import java.util.List;
 import src.Prompts;
 import src.Asker;
 import src.Main;
-import src.FolderBehaviours.FoldInFoldOpts.OptionA;
-import src.FolderBehaviours.FoldInFoldOpts.OptionB;
-import src.FolderBehaviours.FoldInFoldOpts.OptionC;
+import src.FolderBehaviours.FoldInFoldOpts.OptionFactory;
 import src.FolderBehaviours.FoldInFoldOpts.OptionHandler;
-import src.FolderBehaviours.FoldInFoldOpts.OptionOther;
 
 public class CreateFolderInFolder implements FolderBehaviour {
 
@@ -23,16 +20,13 @@ public class CreateFolderInFolder implements FolderBehaviour {
 
         while (!back) {
             OptionHandler optHandler = new OptionHandler();
+            OptionFactory optFact = new OptionFactory();
             boolean folderMade = false;
 
             String userInput = Asker.askOption(Prompts.createFolderOptionsPrompt(), options).toUpperCase();
             String folderNme = Asker.askNotString(Asker.NEWFOLDERQ, Arrays.asList(""));
 
-            if (userInput.equals(Prompts.OPTION_A)) optHandler.setOptBeh(new OptionA());
-            else if (userInput.equals(Prompts.OPTION_B)) optHandler.setOptBeh(new OptionB()); // "In a specific folder"
-            else if (userInput.equals(Prompts.OPTION_C)) optHandler.setOptBeh(new OptionC());
-            else optHandler.setOptBeh(new OptionOther());
-
+            optHandler.setOptBeh(optFact.createBehaviour(userInput));
             folderMade = optHandler.handle(folderNme, filePath);
 
             if (folderMade) {
