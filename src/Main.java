@@ -1,5 +1,11 @@
+package src;
 import java.util.Arrays;
 import java.util.List;
+
+import src.FolderBehaviours.CreateFolderInFolder;
+import src.FolderBehaviours.CreateMass;
+import src.FolderBehaviours.CreateNull;
+import src.FolderBehaviours.CreateWeeks;
 
 public class Main {
     private static final String EXIT = "Exiting...";
