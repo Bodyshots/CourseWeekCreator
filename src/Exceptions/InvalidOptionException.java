@@ -1,3 +1,4 @@
+package src.Exceptions;
 public class InvalidOptionException extends Exception {
     
     /**

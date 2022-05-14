@@ -1,19 +1,23 @@
+package src;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
+import src.Exceptions.InvalidOptionException;
 
 public class Asker {
 
 
     private static final Integer MINFOLDERS = 1;
     private static final Scanner SCANNER = new Scanner(System.in);
-    static final String YEARQ = "What year? Eg. \'1st year\', \'2nd year\', etc.";
-    static final String COURSEQ = "What course? Eg. \'CSC207\', \'MAT102\', etc.";
-    static final String FILEPATHQ = "Enter the filepath for where your folders should be created:";
-    static final String NEWFOLDERQ = "What is this new folder\'s name?";
-    static final String NUMBERFOLDERQ = "Number these folders? (eg. Lab 1, Lab 2, etc.)";
-    static final String PICKFOLDERQ = "Which folder do you want to create your folders in?";
-    static final String FOLDERTOTALQ = "How many folders? The amount must be at least 1.";
+    public static final String YEARQ = "What year? Eg. \'1st year\', \'2nd year\', etc.";
+    public static final String COURSEQ = "What course? Eg. \'CSC207\', \'MAT102\', etc.";
+    public static final String FILEPATHQ = "Enter the filepath for where your folders should be created:";
+    public static final String NEWFOLDERQ = "What is this new folder\'s name?";
+    public static final String NUMBERFOLDERQ = "Number these folders? (eg. Lab 1, Lab 2, etc.)";
+    public static final String PICKFOLDERQ = "Which folder do you want to create your folders in?";
+    public static final String FOLDERTOTALQ = "How many folders? The amount must be at least 1.";
 
     private static String decisionString(String msg, List<String> options) {
         Boolean chosen = false;

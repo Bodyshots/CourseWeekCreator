@@ -1,7 +1,14 @@
+package src.FolderBehaviours;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import src.FolderChecker;
+import src.FolderCreator;
+import src.Prompts;
+import src.Asker;
+import src.Main;
 
 public class CreateFolderInFolder implements FolderBehaviour {
     static final int OFFSET = 65; 

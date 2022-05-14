@@ -1,4 +1,7 @@
+package src;
 import java.io.File;
+
+import src.FolderBehaviours.FolderBehaviour;
 
 public class FolderCreator {
     private static final Integer MINFOLDERS = 1;

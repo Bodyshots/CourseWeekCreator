@@ -1,14 +1,15 @@
+package src;
 import java.util.List;
 
 public class Prompts {
-    static final String YES = "Y";
-    static final String NO = "N";
-    static final String OPTION_A = "A";
-    static final String OPTION_B = "B";
-    static final String OPTION_C = "C";
-    static final String OPTION_D = "D";
-    static final String OPTION_E = "E";
-    static final String OPTION_Z = "Z"; // last option
+    public static final String YES = "Y";
+    public static final String NO = "N";
+    public static final String OPTION_A = "A";
+    public static final String OPTION_B = "B";
+    public static final String OPTION_C = "C";
+    public static final String OPTION_D = "D";
+    public static final String OPTION_E = "E";
+    public static final String OPTION_Z = "Z"; // last option
 
     public static final String yesNoPrompt() {
         return String.format("[%s] - Yes\n" +

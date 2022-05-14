@@ -1,4 +1,10 @@
+package src.FolderBehaviours;
 import java.util.Arrays;
+
+import src.FolderCreator;
+import src.Asker;
+import src.Prompts;
+import src.Main;
 
 public class CreateMass implements FolderBehaviour {
 
