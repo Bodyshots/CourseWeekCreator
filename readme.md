@@ -8,6 +8,5 @@ Basically, it creates a specified # of folders at a specified destination.
 Run FolderCreator.java and enter the program's required inputs.
 
 ## To Do
-- General refactoring and design improvements
 - .exe file
 - Possible conversion w/ JavaFX?
