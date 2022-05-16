@@ -23,7 +23,7 @@ public class CreateFolderInFolder implements FolderBehaviour {
             OptionFactory optFact = new OptionFactory();
             boolean folderMade = false;
 
-            String userInput = Asker.askOption(Prompts.createFolderOptionsPrompt(), options).toUpperCase();
+            String userInput = Asker.askFoldCreateOpts(options).toUpperCase();
 
             optHandler.setOptBeh(optFact.createBehaviour(userInput));
 

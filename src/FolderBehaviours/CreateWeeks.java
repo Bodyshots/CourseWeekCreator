@@ -9,6 +9,8 @@ import src.Main;
 public class CreateWeeks implements FolderBehaviour{
 
     private static final String FOLDERNME = "Week";
+    private static final String YEARQ = "What year? Eg. \'1st year\', \'2nd year\', etc.";
+    private static final String COURSEQ = "What course? Eg. \'CSC207\', \'MAT102\', etc.";
 
     private String getWeekPath(String filePath) {
         return String.format("%s\\", filePath) + this.getYear() +
@@ -16,11 +18,11 @@ public class CreateWeeks implements FolderBehaviour{
     }
 
     private String getYear() {
-        return Asker.askNotString(Asker.YEARQ, Arrays.asList(""));
+        return Asker.askNotString(YEARQ, Arrays.asList(""));
     }
     
     private String getCourse() {
-        return Asker.askNotString(Asker.COURSEQ, Arrays.asList(""));
+        return Asker.askNotString(COURSEQ, Arrays.asList(""));
     }
 
     @Override
