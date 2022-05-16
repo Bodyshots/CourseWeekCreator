@@ -11,6 +11,8 @@ public class CreateMass implements FolderBehaviour {
     @Override
     public void doCreate(String filePath) {
         int folderTotal = Asker.askFolderNum();
+        if (folderTotal == 0) return;
+
         String folderNme = Asker.askNotString(Asker.NEWFOLDERQ, Arrays.asList(""));
         
         String userInput = Asker.askFoldersConfirm(folderNme, filePath, folderTotal).toUpperCase();
@@ -20,7 +22,7 @@ public class CreateMass implements FolderBehaviour {
             FolderCreator.createFolder(String.format("%s %d", folderNme, i), filePath);
         }
 
-        userInput = Asker.askContinue(DONE).toUpperCase();
+        userInput = Asker.askDoneContinue();
         if (userInput.equals(Prompts.NO)) Main.exitProgram();
         
     }

@@ -17,9 +17,22 @@ public class Asker {
     public static final String NEWFOLDERQ = "What is this new folder\'s name?";
     public static final String NUMBERFOLDERQ = "Number these folders? (eg. Lab 1, Lab 2, etc.)";
     public static final String PICKFOLDERQ = "Which folder do you want to create your folders in?";
-    public static final String FOLDERTOTALQ = "How many folders? The amount must be at least 1.";
+    public static final String FOLDERTOTALQ = "How many folders? The amount must be at least 1.\n"
+                                              + "Alternatively, enter nothing (\"\") to go back to the main menu.";
+    public static final String DONE = "Finished.";
 
-    private static String decisionString(String msg, List<String> options) {
+    /*
+    Credit to:
+    https://www.delftstack.com/howto/java/
+    java-clear-console/#:~:text=To%20clear%20the%20console%20in,
+    command%20to%20clean%20the%20console.
+    */
+    public static final void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    private static final String decisionString(String msg, List<String> options) {
         Boolean chosen = false;
         String userInput = "";
         while (!chosen) {
@@ -30,12 +43,15 @@ public class Asker {
                 }
                 else chosen = true;
             }
-            catch (InvalidOptionException e) {System.out.println(msg);}
+            catch (InvalidOptionException e) {
+                clearScreen();
+                System.out.println(String.format("Invalid choice.\n%s", msg));
+            }
         }
         return userInput;
     }
 
-    private static String decisionNotString(String msg, List<String> options) {
+    private static final String decisionNotString(String msg, List<String> options) {
         Boolean chosen = false;
         String userInput = "";
         while (!chosen) {
@@ -46,7 +62,10 @@ public class Asker {
                 }
                 else chosen = true;
             }
-            catch (InvalidOptionException e) {System.out.println(msg);}
+            catch (InvalidOptionException e) {
+                clearScreen();
+                System.out.println(String.format("Invalid choice.\n%s", msg));
+            }
         }
         return userInput;
     }
@@ -59,23 +78,33 @@ public class Asker {
      * @param max the maximum valid number the user can input
      * @return the user's valid integer input
      */
-    private static Integer decisionNumber(String msg, Integer min, Integer max) {
+    private static final Integer decisionNumber(String msg, Integer min, Integer max) {
     	Boolean chosen = false;
     	int chosenAmount = -1;
     	while (!chosen) {
     		try {
-    			chosenAmount = Integer.parseInt(SCANNER.nextLine());
+                String userEntry = SCANNER.nextLine();
+                if (userEntry == "") return 0;
+    			chosenAmount = Integer.parseInt(userEntry);
     			if (chosenAmount > max || chosenAmount < min) {
     				throw new InvalidOptionException();
     			}
     			else chosen = true;
     		}		
-    		catch(NumberFormatException| InvalidOptionException e) {System.out.println(msg);}	
-    		}
+    		catch (NumberFormatException| InvalidOptionException e) {
+                clearScreen();
+                System.out.println(String.format("Invalid choice.\n%s", msg));
+            }	
+    	}
         return chosenAmount;
     }
 
-    public static final String askYesNo(String msg) {
+    private static final Integer askInteger(String msg, Integer min, Integer max) {
+        System.out.println(msg);
+        return decisionNumber(msg, min, max);
+    }
+
+    private static final String askYesNo(String msg) {
         List<String> options = Arrays.asList(Prompts.YES, Prompts.NO);
         String displayMsg = msg + "\n" + Prompts.yesNoPrompt();
         System.out.println(displayMsg);
@@ -87,19 +116,16 @@ public class Asker {
      * @param msg the message displayed for the user to input a string
      * @return the user's string input
      */
-    public static String askString(String msg) {
+    private static String askString(String msg) {
+        clearScreen();
         System.out.println(msg);
         return SCANNER.nextLine();
     }
 
     public static String askNotString(String msg, List<String> notOptions) {
+        clearScreen();
         System.out.println(msg);
         return decisionNotString(msg, notOptions);
-    }
-
-    public static Integer askInteger(String msg, Integer min, Integer max) {
-        System.out.println(msg);
-        return decisionNumber(msg, min, max);
     }
 
     public static String askFilePath(String msg) {
@@ -117,6 +143,7 @@ public class Asker {
                 else chosen = true;
             }
             catch (InvalidOptionException e) {
+                clearScreen();
                 System.out.println("Invalid file path. Please try again.");
             }
         }
@@ -136,17 +163,19 @@ public class Asker {
                 else chosen = true;
             }
             catch (InvalidOptionException e) {
+                clearScreen();
                 System.out.println("Invalid file path. Please try again.");
             }
         }
         return filePath + "\\" + userInput;
     }
 
-    public static final String askContinue(String msg) {
+    private static final String askContinue(String msg) {
         return askYesNo(msg + "\n" + "Continue?");
     }
 
     public static final String askOption(String msg, List<String> options) {
+        clearScreen();
         System.out.println(msg);
         return decisionString(msg, options);
     }
@@ -158,23 +187,54 @@ public class Asker {
      * @return a yes or no from the user
      */
     public static final String askWeekFolderConfirm(String filePath, Integer weekTotal) {
-        String yesNoMsg = String.format("Creating %d folders at:\n%s.", weekTotal, filePath);
-        return Asker.askContinue(yesNoMsg);
+        String yesNoMsg = String.format("Creating %d folders at:\n%s", weekTotal, filePath);
+        clearScreen();
+        String userInput = Asker.askContinue(yesNoMsg);
+        clearScreen();                                                              
+        return userInput;
     }
 
     public static final String askFolderInConfirm(String newFolder, String folder) {
-        String yesNoMsg = String.format("Creating \"%s\" in:\n%s.", newFolder, folder);
-        return Asker.askContinue(yesNoMsg);
+        String yesNoMsg = String.format("Creating \"%s\" in:\n%s", newFolder, folder);
+        clearScreen();
+        String userInput = Asker.askContinue(yesNoMsg);
+        clearScreen();                                                              
+        return userInput;
     }
 
     public static final String askFoldersConfirm(String folderNme, String filePath, Integer folderTotal) {
         String yesNoMsg = String.format("Creating %d \"%s\" folders at:\n%s", folderTotal, folderNme,
-                                                                                 filePath);
-        return Asker.askContinue(yesNoMsg);
+                                                                                      filePath);
+        clearScreen();
+        String userInput = Asker.askContinue(yesNoMsg);
+        clearScreen();                                                              
+        return userInput;
     }
 
     public static final Integer askFolderNum() {
+        clearScreen();
         return Asker.askInteger(Asker.FOLDERTOTALQ, MINFOLDERS, Integer.MAX_VALUE);
+    }
+
+    public static final String askFilePathCont(String filePath) {
+        clearScreen();
+        return Asker.askYesNo(Prompts.continueFilePath(filePath)).toUpperCase();
+    }
+
+    public static final String askNumFoldQ() {
+        clearScreen();
+        String userInput = Asker.askYesNo(Asker.NUMBERFOLDERQ).toUpperCase();
+        clearScreen();
+        return userInput;
+    }
+
+    public static final String askDoneContinue() {
+        return Asker.askContinue(DONE).toUpperCase();
+    }
+
+    public static final String weekFoldersExplain() {
+        clearScreen();
+        return Asker.askContinue(Prompts.weekFolderExplain()).toUpperCase();
     }
 
 }

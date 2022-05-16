@@ -62,6 +62,8 @@ public abstract class AbsOpt {
 
     final boolean createFolder(String filePath, String folderNme, String chosenFolder) {
         Integer folderNum = Asker.askFolderNum();
+        if (folderNum == 0) return false;
+
         String userInput = Asker.askFolderInConfirm(folderNme, chosenFolder).toUpperCase();
         if (userInput.equals(Prompts.YES)) {
             for (int i = 0; i < folderNum; i++) {
@@ -80,7 +82,7 @@ public abstract class AbsOpt {
                                                     String.format("All %s folders", cat)).toUpperCase();
         if (userInput.equals(Prompts.YES)) {
             FolderChecker.sortFolders(chosenCat);
-            userInput = Asker.askYesNo(Asker.NUMBERFOLDERQ).toUpperCase();
+            userInput = Asker.askNumFoldQ();
             if (userInput.equals(Prompts.YES)) createMultiFolders(filePath, folderNme, 
                                                                   chosenCat, true);
             else createMultiFolders(filePath, folderNme, chosenCat, false);

@@ -25,10 +25,12 @@ public class CreateWeeks implements FolderBehaviour{
 
     @Override
     public void doCreate(String filePath) {
-        String userInput = Asker.askContinue(Prompts.weekFolderExplain()).toUpperCase();
+        String userInput = Asker.weekFoldersExplain();
         if (userInput.equals(Prompts.NO)) return; // Don't create "week" folders
 
         int folderTotal = Asker.askFolderNum();
+        if (folderTotal == 0) return;
+
         String weekPath = this.getWeekPath(filePath);
 
         userInput = Asker.askFoldersConfirm(FOLDERNME, weekPath, folderTotal).toUpperCase();;
@@ -38,7 +40,7 @@ public class CreateWeeks implements FolderBehaviour{
             FolderCreator.createFolder(String.format("%s %d", FOLDERNME, i), weekPath);
         }
 
-        userInput = Asker.askContinue(DONE).toUpperCase();
+        userInput = Asker.askDoneContinue();
         if (userInput.equals(Prompts.NO)) Main.exitProgram();
         return;
     }

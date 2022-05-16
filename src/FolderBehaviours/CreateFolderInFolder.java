@@ -31,7 +31,7 @@ public class CreateFolderInFolder implements FolderBehaviour {
                           optHandler.handle(Asker.askNotString(Asker.NEWFOLDERQ, Arrays.asList("")), filePath);
 
             if (folderMade) {
-                userInput = Asker.askContinue(DONE).toUpperCase();
+                userInput = Asker.askDoneContinue();
                 if (userInput.equals(Prompts.NO)) Main.exitProgram();
             }
             back = true; // back button

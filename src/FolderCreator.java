@@ -5,7 +5,6 @@ import src.FolderBehaviours.CreateNull;
 import src.FolderBehaviours.FolderBehaviour;
 
 public class FolderCreator {
-    private static final Integer MINFOLDERS = 1;
     private FolderBehaviour fBehaviour = new CreateNull();
 
     private String filePath;
@@ -39,7 +38,7 @@ public class FolderCreator {
                 else if (this.filePath == null) this.filePath = PathFinder.getDefault();
 
                 tempFilePath = this.filePath;
-                userInput = Asker.askYesNo(Prompts.continueFilePath(tempFilePath)).toUpperCase();
+                userInput = Asker.askFilePathCont(tempFilePath);
                 if (userInput.equals(Prompts.YES)) {
                     confirmPath = true;
                     if (this.filePath == null) this.filePath = tempFilePath;
@@ -50,10 +49,6 @@ public class FolderCreator {
                 }
             }
         }
-    }
-
-    Integer setFolderTotal() {
-        return Asker.askInteger(Asker.FOLDERTOTALQ, MINFOLDERS, Integer.MAX_VALUE);
     }
 
     public void create() {
