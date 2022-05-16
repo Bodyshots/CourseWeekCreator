@@ -1,12 +1,18 @@
 package src;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     private static final String EXIT = "Exiting...";
+    private static final String EXITPROMPT = "Enter any key to exit.";
     
     public static void exitProgram() {
-        System.out.println(EXIT);
+        System.out.println(EXITPROMPT);
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
+        scanner.close();
+        System.out.print(EXIT);
         System.exit(0);
     }
 
