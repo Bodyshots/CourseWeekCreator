@@ -42,7 +42,8 @@ public class Asker {
         }
         else {
             try {
-                Runtime.getRuntime().exec("clear");
+                String [] clear = new String[] {"clear"};
+                Runtime.getRuntime().exec(clear);
             } catch (IOException e) {
                 System.err.print("Error: IOException\n");
                 e.printStackTrace();
