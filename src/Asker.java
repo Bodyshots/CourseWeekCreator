@@ -135,7 +135,6 @@ public class Asker {
      * @return the user's string input
      */
     private static String askString(String msg) {
-        clearScreen();
         System.out.println(msg);
         return SCANNER.nextLine();
     }
@@ -149,6 +148,7 @@ public class Asker {
     public static String askFilePath(String msg) {
         Boolean chosen = false;
         String userInput = "";
+        clearScreen();
 
         while (!chosen) {
             try {
@@ -171,6 +171,7 @@ public class Asker {
     public static String askFilePath(String msg, String filePath) {
         Boolean chosen = false;
         String userInput = "";
+        clearScreen();
 
         while (!chosen) {
             try {

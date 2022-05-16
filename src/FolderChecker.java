@@ -51,7 +51,7 @@ public class FolderChecker {
         int fileIndex = 0;
 
         while (fileIndex < files.length) {
-            if (!FolderChecker.isFolder(files[fileIndex])) {
+            if (!FolderChecker.isFolder(String.format("%s\\%s", filePath, files[fileIndex]))) {
                 fileIndex ++;
             }
             else {
