@@ -24,10 +24,11 @@ public class CreateFolderInFolder implements FolderBehaviour {
             boolean folderMade = false;
 
             String userInput = Asker.askOption(Prompts.createFolderOptionsPrompt(), options).toUpperCase();
-            String folderNme = Asker.askNotString(Asker.NEWFOLDERQ, Arrays.asList(""));
 
             optHandler.setOptBeh(optFact.createBehaviour(userInput));
-            folderMade = optHandler.handle(folderNme, filePath);
+
+            folderMade = !userInput.equals(Prompts.OPTION_D) && 
+                          optHandler.handle(Asker.askNotString(Asker.NEWFOLDERQ, Arrays.asList("")), filePath);
 
             if (folderMade) {
                 userInput = Asker.askContinue(DONE).toUpperCase();

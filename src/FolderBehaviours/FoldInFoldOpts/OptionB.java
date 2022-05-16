@@ -59,10 +59,12 @@ public class OptionB extends AbsOpt {
         String userInput = "";
         
         while (userInput == "") {
-            if (foldIndex + 1 == foldSize || options.size() > MAXOPTION - 3 || 
+            if (foldSize == 0 || foldIndex + 1 == foldSize || options.size() > MAXOPTION - 3 || 
                 (foldIndex > MAXOPTION && foldIndex == foldSize)) { // for contents larger than A-Z
                 boolean nextPg = false, backPg = false;
-                List<String> descripts = getDescripts(options.size(), times, offset, folders);
+                List<String> descripts;
+                if (foldSize != 0) descripts = getDescripts(options.size(), times, offset, folders);
+                else descripts = new ArrayList<>();
 
                 int result = checkIfPg(foldIndex, foldSize, nextPg, backPg);
                 if (result == 2) {
