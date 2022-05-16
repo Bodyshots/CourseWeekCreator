@@ -1,5 +1,6 @@
 package src;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -23,13 +24,30 @@ public class Asker {
 
     /*
     Credit to:
-    https://www.delftstack.com/howto/java/
-    java-clear-console/#:~:text=To%20clear%20the%20console%20in,
-    command%20to%20clean%20the%20console.
+    https://stackoverflow.com/questions/19252496/
+    clear-screen-with-windows-cls-command-in-java-console-application
     */
     public static final void clearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        final String os = System.getProperty("os.name");
+        if (os.contains("Windows")) {
+            try {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } catch (InterruptedException e) {
+                System.err.print("Error: Interrupted Terminal Clear\n");
+                e.printStackTrace();
+            } catch (IOException e) {
+                System.err.print("Error: IOException\n");
+                e.printStackTrace();
+            }
+        }
+        else {
+            try {
+                Runtime.getRuntime().exec("clear");
+            } catch (IOException e) {
+                System.err.print("Error: IOException\n");
+                e.printStackTrace();
+            }
+        }
     }
 
     private static final String decisionString(String msg, List<String> options) {
