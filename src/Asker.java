@@ -29,7 +29,7 @@ public class Asker {
     */
     public static final void clearScreen() {
         final String os = System.getProperty("os.name");
-        if (os.contains("Windows"))
+        if (os.contains("Windows")) {
             try {
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
             } catch (InterruptedException e) {
@@ -39,13 +39,15 @@ public class Asker {
                 System.err.print("Error: IOException\n");
                 e.printStackTrace();
             }
-        else
+        }
+        else {
             try {
                 Runtime.getRuntime().exec("clear");
             } catch (IOException e) {
                 System.err.print("Error: IOException\n");
                 e.printStackTrace();
             }
+        }
     }
 
     private static final String decisionString(String msg, List<String> options) {
