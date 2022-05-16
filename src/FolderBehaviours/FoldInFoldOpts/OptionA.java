@@ -6,7 +6,6 @@ import java.util.List;
 
 import src.Asker;
 import src.FolderChecker;
-import src.Prompts;
 
 public class OptionA extends AbsOpt{
 
@@ -81,8 +80,7 @@ public class OptionA extends AbsOpt{
 
                 foldIndex = handleLastOptsCat(descripts, options, folderCats, foldIndex, nextPg, backPg);
 
-                System.out.println(Asker.PICKFOLDERQ);
-                userInput = Asker.askOption(Prompts.infOptions(options, descripts), options).toUpperCase();
+                userInput = Asker.askFolderChoice(options, descripts).toUpperCase();
                 times ++;
 
                 if (!(userInput.equals(options.get(options.size() - 1)))) { // if not back button

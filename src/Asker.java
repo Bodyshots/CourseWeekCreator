@@ -12,15 +12,15 @@ public class Asker {
 
     private static final Integer MINFOLDERS = 1;
     private static final Scanner SCANNER = new Scanner(System.in);
-    public static final String YEARQ = "What year? Eg. \'1st year\', \'2nd year\', etc.";
-    public static final String COURSEQ = "What course? Eg. \'CSC207\', \'MAT102\', etc.";
+
+    private static final String NUMBERFOLDERQ = "Number these folders? (eg. Lab 1, Lab 2, etc.)";
+    private static final String PICKFOLDERQ = "Which folder do you want to create your folders in?";
+    private static final String FOLDERTOTALQ = "How many folders? The amount must be at least 1.\n"
+                                                + "Alternatively, enter nothing (\"\") to go back to the main menu.";
+    private static final String DONE = "Finished.";
+
     public static final String FILEPATHQ = "Enter the filepath for where your folders should be created:";
     public static final String NEWFOLDERQ = "What is this new folder\'s name?";
-    public static final String NUMBERFOLDERQ = "Number these folders? (eg. Lab 1, Lab 2, etc.)";
-    public static final String PICKFOLDERQ = "Which folder do you want to create your folders in?";
-    public static final String FOLDERTOTALQ = "How many folders? The amount must be at least 1.\n"
-                                              + "Alternatively, enter nothing (\"\") to go back to the main menu.";
-    public static final String DONE = "Finished.";
 
     /*
     Credit to:
@@ -192,10 +192,27 @@ public class Asker {
         return askYesNo(msg + "\n" + "Continue?");
     }
 
-    public static final String askOption(String msg, List<String> options) {
+    private static final String askOption(String msg, List<String> options) {
         clearScreen();
         System.out.println(msg);
         return decisionString(msg, options);
+    }
+
+    public static final String askFolderChoice(List<String> options, List<String> descripts) {
+        clearScreen();
+        System.out.println(Asker.PICKFOLDERQ);
+
+        String msg = Prompts.infOptions(options, descripts);
+        System.out.println(msg);
+        return decisionString(msg, options);
+    }
+
+    public static final String askMainOpts(String filePath, List<String> options) {
+        return Asker.askOption(Prompts.folderOptionsPrompt(filePath), options).toUpperCase();
+    }
+
+    public static final String askFoldCreateOpts(List<String> options) {
+        return Asker.askOption(Prompts.createFolderOptionsPrompt(), options);
     }
 
     /**

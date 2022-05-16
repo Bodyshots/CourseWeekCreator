@@ -28,7 +28,7 @@ public class Main {
 
         folderCreator.setFilePath();
         while (!exitProgram) {
-            String userInput = Asker.askOption(Prompts.folderOptionsPrompt(folderCreator.getFilePath()), options).toUpperCase();
+            String userInput = Asker.askMainOpts(folderCreator.getFilePath(), options).toUpperCase();
             folderCreator.setFBehaviour(optFact.createBehaviour(userInput));
 
             if (userInput.equals(Prompts.OPTION_C)) folderCreator.setFilePath();
